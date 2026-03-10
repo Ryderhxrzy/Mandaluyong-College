@@ -55,28 +55,28 @@ export default function Home() {
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-primary">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-primary">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-2 group-hover:bg-primary group-hover:text-white transition">
                   <Users className="text-primary group-hover:text-white" size={20} />
                 </div>
                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1">420+</div>
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Students Enrolled</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-green-600">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-green-600">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full mb-2 group-hover:bg-green-600 group-hover:text-white transition">
                   <Award className="text-green-600 group-hover:text-white" size={20} />
                 </div>
                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-1">20+</div>
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Faculty Members</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-purple-600">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-purple-600">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-2 group-hover:bg-purple-600 group-hover:text-white transition">
                   <BookOpen className="text-purple-600 group-hover:text-white" size={20} />
                 </div>
                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-600 mb-1">5</div>
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Degree Programs</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-amber-500">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center group hover:border-amber-500">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-2 group-hover:bg-amber-500 group-hover:text-white transition">
                   <Target className="text-amber-500 group-hover:text-white" size={20} />
                 </div>
@@ -88,77 +88,86 @@ export default function Home() {
         </section>
 
         {/* Core Values */}
-        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
-          <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-gray-900 dark:text-white">
-              Our Core Values
+        <section
+          className="relative w-full py-24 md:py-32 flex items-center justify-center text-center overflow-hidden"
+          style={{
+            backgroundImage: 'url(/campus.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+          }}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/65"></div>
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight" style={{ color: '#50a2ff' }}>
+              Core Values That Drive Excellence at Mandaluyong College of Science and Technology
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 sm:p-6 md:p-8 rounded-lg border-l-4 border-primary">
-                <Target className="text-primary mb-4" size={32} />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Discipline</h3>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                  Fostering self-control and commitment to excellence in all endeavors.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-4 sm:p-6 md:p-8 rounded-lg border-l-4 border-green-600">
-                <Award className="text-green-600 mb-4" size={32} />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Excellence</h3>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                  Pursuing the highest standards in academics and personal growth.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 sm:p-6 md:p-8 rounded-lg border-l-4 border-red-600">
-                <Users className="text-red-600 mb-4" size={32} />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Leadership</h3>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                  Developing responsible leaders who serve their communities.
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-4 sm:p-6 md:p-8 rounded-lg border-l-4 border-purple-600">
-                <BookOpen className="text-purple-600 mb-4" size={32} />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Knowledge</h3>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                  Empowering students through quality education and innovation.
-                </p>
-              </div>
-            </div>
+            <p className="text-sm sm:text-base md:text-lg text-white leading-relaxed font-normal max-w-3xl mx-auto">
+              At MCST, we are committed to genuine public service and fostering care within our community. Our core values of <span className="font-bold">discipline, action over words, nationalism, and excellence</span> guide us in shaping responsible and innovative leaders.
+            </p>
           </div>
         </section>
 
         {/* Academic Commitment */}
-        <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
+        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
           <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-              <div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white">
-                  Our Academic Commitment
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 mb-4">
-                  At Mandaluyong College, we are committed to providing accessible,
-                  high-quality education that prepares students for success in their
-                  chosen fields.
-                </p>
-                <p className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 mb-4">
-                  Our faculty members are dedicated educators and researchers who bring
-                  real-world experience and expertise to the classroom.
-                </p>
-                <p className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 mb-6">
-                  We believe in continuous improvement and innovation in our teaching
-                  methods and curriculum development.
-                </p>
-                <Link
-                  href="/academics"
-                  className="inline-block bg-primary text-white px-6 sm:px-8 py-3 rounded-lg font-medium hover:bg-[#003a7a] transition text-sm sm:text-base"
-                >
-                  Learn More About Our Programs
-                </Link>
-              </div>
-              <div className="bg-gradient-to-br from-blue-400 to-primary rounded-lg h-80 sm:h-96 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <BookOpen size={60} className="mx-auto mb-4 opacity-80 sm:w-20 sm:h-20" />
-                  <p className="text-lg sm:text-xl font-semibold">Academic Excellence</p>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Our Commitment to Quality Education and Innovation
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                At Mandaluyong College of Science and Technology, we strive to provide accessible, high-quality education that empowers our students. Our dedication to advancing instruction and research ensures that we remain at the forefront of academic excellence.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+              {/* Card 1 */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition hover:shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
                 </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  Collaborating for a Brighter Future
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                  We actively collaborate with stakeholders to enhance educational outcomes.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition hover:shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  Continuous Improvement in Education
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Our focus on continuous improvement drives us to innovate and adapt.
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition hover:shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                  </svg>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  Fostering Excellence in Research and Instruction
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                  We prioritize research initiatives that contribute to societal development.
+                </p>
               </div>
             </div>
           </div>
