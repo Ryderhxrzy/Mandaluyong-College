@@ -19,7 +19,7 @@ export default function Home() {
         {/* Overlay - Darker */}
         <div className="absolute inset-0 bg-black/70"></div>
 
-        {/* Content */}
+        {/* Hero Section Content */}
         <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
             <span className="text-white block mb-1 sm:mb-2">Shaping Tomorrow's Innovators at</span>
@@ -45,7 +45,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Rest of the Page Content */}
+      {/* Institutional Content */}
       <div className="bg-white dark:bg-gray-900">
         {/* Institutional Overview */}
         <section className="py-10 md:py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -113,7 +113,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Academic Commitment */}
+        {/* Education Commitment */}
         <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
           <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
             <div className="text-center mb-12 md:mb-16">

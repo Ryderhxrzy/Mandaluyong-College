@@ -87,7 +87,7 @@ const navItems: NavItem[] = [
 
 export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
-  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -95,6 +95,10 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const toggleDropdown = (href: string) => {
+    setExpandedGroup(expandedGroup === href ? null : href)
+  }
 
   const isActive = (href: string) => pathname === href
   const isGroupActive = (href: string) => pathname.startsWith(href)
