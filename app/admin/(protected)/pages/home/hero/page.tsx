@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight, Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CldUploadWidget } from 'next-cloudinary'
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface HeroSection {
   id: string
@@ -55,21 +55,26 @@ export default function HeroSectionPage() {
     }
   }
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData({
       ...formData,
       [field]: value,
     })
   }
 
-  const handleCloudinaryUpload = (result: any) => {
-    if (result.event === 'success') {
-      const imageUrl = result.info.secure_url
+  const handleCloudinaryUpload = (results: CloudinaryUploadWidgetResults) => {
+    if (
+      results.event === 'success' &&
+      results.info &&
+      typeof results.info === 'object' &&
+      'secure_url' in results.info
+    ) {
+      const imageUrl = (results.info as { secure_url: string }).secure_url
       setUploadedImage(imageUrl)
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         background_image_url: imageUrl,
-      })
+      }))
       toast.success('Image uploaded successfully!')
     }
   }
