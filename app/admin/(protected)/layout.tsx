@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Toaster } from 'react-hot-toast'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 import { decodeJwt } from 'jose'
@@ -36,6 +37,7 @@ export default function ProtectedLayout({
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Toaster position="top-right" />
       {/* Sidebar - Hidden on mobile, visible on lg */}
       <div className="hidden lg:flex">
         <AdminSidebar onClose={() => setIsSidebarOpen(false)} />
