@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, ChevronDown, Mail, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronDown, Mail, Sun, Moon, ExternalLink } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 
@@ -37,15 +37,16 @@ function ThemeToggle({ isScrolled }: { isScrolled: boolean }) {
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const pathname = usePathname()
 
   const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
-    { label: 'Academics', href: '/academics', hasDropdown: true },
+    { label: 'Academics', href: '/academics', hasDropdown: true, items: [{ label: 'Programs', href: '/academics' }, { label: 'Admissions', href: '/admissions' }] },
     { label: 'News', href: '/news' },
     { label: 'FAQs', href: '/faqs' },
-    { label: 'Resources', href: '/resources', hasDropdown: true },
+    { label: 'Resources', href: '/resources', hasDropdown: true, items: [{ label: 'Registrar\'s Office', href: '/resources' }, { label: 'Learning Resource Center', href: '/resources' }], position: 'right' },
   ]
 
   useEffect(() => {
@@ -91,19 +92,51 @@ export default function Header() {
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
             return (
-              <Link
+              <div
                 key={link.href}
-                href={link.href}
-                className={`font-semibold text-sm lg:text-base flex items-center gap-1 transition-colors duration-300 ${isActive
-                  ? 'text-[#50a2ff]'
-                  : isSolid
-                    ? 'text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-primary'
-                    : 'text-white hover:text-gray-200'
-                  }`}
+                className="relative group"
+                onMouseEnter={() => link.hasDropdown && setOpenDropdown(link.label)}
+                onMouseLeave={() => setOpenDropdown(null)}
               >
-                {link.label}
-                {link.hasDropdown && <ChevronDown size={14} />}
-              </Link>
+                <Link
+                  href={link.href}
+                  className={`font-semibold text-sm lg:text-base flex items-center gap-1 transition-colors duration-300 ${isActive
+                    ? 'text-[#50a2ff]'
+                    : isSolid
+                      ? 'text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-primary'
+                      : 'text-white hover:text-gray-200'
+                    }`}
+                >
+                  {link.label}
+                  {link.hasDropdown && <ChevronDown size={14} className="transition-transform group-hover:rotate-180" />}
+                </Link>
+
+                {/* Dropdown Menu */}
+                {link.hasDropdown && link.items && (
+                  <div className={`absolute mt-0 w-56 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform origin-top group-hover:translate-y-0 translate-y-[-10px] ${
+                    (link as any).position === 'right' ? 'right-0' : 'left-0'
+                  }`}>
+                    {link.items.map((item, index) => (
+                      <Link
+                        key={index}
+                        href={item.href}
+                        className={`flex items-center justify-between px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                          index === 0 ? 'rounded-t-lg' : ''
+                        } ${
+                          index === link.items!.length - 1 ? 'rounded-b-lg' : ''
+                        } ${
+                          isSolid
+                            ? 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
+                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        {item.label}
+                        {(link as any).position === 'right' && <ExternalLink size={14} />}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             )
           })}
 
