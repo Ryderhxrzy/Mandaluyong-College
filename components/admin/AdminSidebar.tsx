@@ -17,6 +17,14 @@ import {
   ChevronDown,
   Sun,
   Moon,
+  Zap,
+  Building2,
+  Heart,
+  Lightbulb,
+  Briefcase,
+  FileText,
+  Clipboard,
+  Library,
 } from 'lucide-react'
 
 interface NavItem {
@@ -37,12 +45,12 @@ const navItems: NavItem[] = [
     href: '/admin/pages/home',
     icon: Home,
     children: [
-      { label: 'Hero Section', href: '/admin/pages/home/hero', icon: Home },
-      { label: 'Institutional Overview', href: '/admin/pages/home/overview', icon: Home },
-      { label: 'Core Values', href: '/admin/pages/home/core-values', icon: Home },
-      { label: 'Education Commitment', href: '/admin/pages/home/quality-education', icon: Home },
-      { label: 'Academic Programs', href: '/admin/pages/home/academic-programs', icon: Home },
-      { label: 'CTA Section', href: '/admin/pages/home/cta', icon: Home },
+      { label: 'Hero Section', href: '/admin/pages/home/hero', icon: Zap },
+      { label: 'Institutional Overview', href: '/admin/pages/home/overview', icon: Building2 },
+      { label: 'Core Values', href: '/admin/pages/home/core-values', icon: Heart },
+      { label: 'Education Commitment', href: '/admin/pages/home/quality-education', icon: Lightbulb },
+      { label: 'Academic Programs', href: '/admin/pages/home/academic-programs', icon: GraduationCap },
+      { label: 'CTA Section', href: '/admin/pages/home/cta', icon: Mail },
     ],
   },
   {
@@ -55,8 +63,8 @@ const navItems: NavItem[] = [
     href: '/admin/pages/academics',
     icon: GraduationCap,
     children: [
-      { label: 'Programs', href: '/admin/pages/academics/programs', icon: GraduationCap },
-      { label: 'Admissions', href: '/admin/pages/academics/admissions', icon: GraduationCap },
+      { label: 'Programs', href: '/admin/pages/academics/programs', icon: Briefcase },
+      { label: 'Admissions', href: '/admin/pages/academics/admissions', icon: FileText },
     ],
   },
   {
@@ -74,8 +82,8 @@ const navItems: NavItem[] = [
     href: '/admin/pages/resources',
     icon: BookOpen,
     children: [
-      { label: "Registrar's Office", href: '/admin/pages/resources/registrar', icon: BookOpen },
-      { label: 'Learning Resource Center', href: '/admin/pages/resources/lrc', icon: BookOpen },
+      { label: "Registrar's Office", href: '/admin/pages/resources/registrar', icon: Clipboard },
+      { label: 'Learning Resource Center', href: '/admin/pages/resources/lrc', icon: Library },
     ],
   },
   {
@@ -87,17 +95,32 @@ const navItems: NavItem[] = [
 
 export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Prevent hydration mismatch
+  // Auto-expand dropdowns with active children
   useEffect(() => {
     setMounted(true)
-  }, [])
+    const newExpanded = new Set<string>()
+    navItems.forEach((item) => {
+      if (item.children && item.children.some((child) => pathname.startsWith(child.href))) {
+        newExpanded.add(item.href)
+      }
+    })
+    setExpandedGroups(newExpanded)
+  }, [pathname])
 
   const toggleDropdown = (href: string) => {
-    setExpandedGroup(expandedGroup === href ? null : href)
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(href)) {
+        newSet.delete(href)
+      } else {
+        newSet.add(href)
+      }
+      return newSet
+    })
   }
 
   const isActive = (href: string) => pathname === href
@@ -136,13 +159,9 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex-1 overflow-y-auto">
         <ul className="space-y-1 px-3 py-2">
           {navItems.map((item) => (
-            <li
-              key={item.href}
-              onMouseEnter={() => item.children && setHoveredGroup(item.href)}
-              onMouseLeave={() => setHoveredGroup(null)}
-            >
+            <li key={item.href}>
               <div
-                className={`flex items-center justify-between rounded-md transition px-3 py-2 ${
+                className={`flex items-center justify-between rounded-md transition px-3 py-2 cursor-pointer ${
                   isActive(item.href)
                     ? 'bg-primary text-white'
                     : isGroupActive(item.href)
@@ -150,26 +169,36 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                <Link
-                  href={item.href}
-                  className="flex items-center gap-3 text-sm font-medium w-full"
-                  onClick={onClose}
-                >
-                  <item.icon size={18} />
-                  <span>{item.label}</span>
-                </Link>
+                {item.children ? (
+                  <button
+                    onClick={() => toggleDropdown(item.href)}
+                    className="flex items-center gap-3 text-sm font-medium w-full cursor-pointer"
+                  >
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-3 text-sm font-medium w-full"
+                    onClick={onClose}
+                  >
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </Link>
+                )}
 
                 {item.children && (
                   <ChevronDown
                     size={16}
                     className={`transition-transform text-gray-400 flex-shrink-0 ${
-                      hoveredGroup === item.href ? 'rotate-180' : ''
+                      expandedGroups.has(item.href) ? 'rotate-180' : ''
                     }`}
                   />
                 )}
               </div>
 
-              {item.children && hoveredGroup === item.href && (
+              {item.children && expandedGroups.has(item.href) && (
                 <ul className="ml-3 mt-1 space-y-1 border-l border-gray-200 dark:border-gray-700 pl-4">
                   {item.children.map((child) => (
                     <li key={child.href}>
