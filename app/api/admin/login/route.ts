@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { verifyPassword } from '@/lib/password-hash'
-
-// Initialize Supabase client with service role key
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+import { signJWT } from '@/lib/jwt'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Query the admin_accounts table
-    const { data: admin, error } = await supabase
+    const { data: admin, error } = await supabaseAdmin
       .from('admin_accounts')
       .select('id, email, password_hash, first_name, last_name, full_name, is_active, role')
       .eq('email', email)
@@ -52,8 +47,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Generate JWT token
+    const token = await signJWT({
+      sub: admin.id,
+      email: admin.email,
+      role: admin.role,
+      fullName: admin.full_name || '',
+    })
+
     // Update last login timestamp
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('admin_accounts')
       .update({ last_login: new Date().toISOString() })
       .eq('id', admin.id)
@@ -62,10 +65,11 @@ export async function POST(request: NextRequest) {
       console.error('Error updating last login:', updateError)
     }
 
-    // Return success response without sensitive data
-    return NextResponse.json(
+    // Create response with token
+    const response = NextResponse.json(
       {
         message: 'Login successful',
+        token,
         admin: {
           id: admin.id,
           email: admin.email,
@@ -77,6 +81,17 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     )
+
+    // Set httpOnly cookie for server-side session validation
+    response.cookies.set('admin_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 86400, // 24 hours
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
