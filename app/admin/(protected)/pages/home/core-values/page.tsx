@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CldUploadWidget } from 'next-cloudinary'
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface CoreValuesSection {
   id: string
@@ -27,22 +27,52 @@ export default function CoreValuesSectionPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const handleInputChange = (field: string, value: any) => {
+  useEffect(() => {
+    fetchCoreValuesData()
+  }, [])
+
+  const fetchCoreValuesData = async () => {
+    try {
+      const response = await fetch('/api/admin/home/core-values')
+      const data = await response.json()
+
+      if (response.ok && data.data) {
+        setFormData(data.data)
+      } else {
+        // Use static data as fallback
+        setFormData(STATIC_DATA)
+      }
+    } catch (error) {
+      console.error('Error fetching core values data:', error)
+      // Use static data as fallback
+      setFormData(STATIC_DATA)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData({
       ...formData,
       [field]: value,
     })
   }
 
-  const handleCloudinaryUpload = (result: any) => {
-    if (result.event === 'success') {
-      const imageUrl = result.info.secure_url
+  const handleCloudinaryUpload = (results: CloudinaryUploadWidgetResults) => {
+    if (
+      results.event === 'success' &&
+      results.info &&
+      typeof results.info === 'object' &&
+      'secure_url' in results.info
+    ) {
+      const imageUrl = (results.info as { secure_url: string }).secure_url
       setUploadedImage(imageUrl)
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         background_image_url: imageUrl,
-      })
+      }))
       toast.success('Image uploaded successfully!')
     }
   }
@@ -50,9 +80,23 @@ export default function CoreValuesSectionPage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // TODO: Add API integration when ready
-      toast.success('Core values section saved successfully!')
-      setIsEditing(false)
+      const response = await fetch('/api/admin/home/core-values', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success('Core values section saved successfully!')
+        setIsEditing(false)
+        setFormData(data.data)
+      } else {
+        toast.error(data.error || 'Failed to save core values section')
+      }
     } catch (error) {
       console.error('Error saving core values section:', error)
       toast.error('An error occurred while saving. Please try again.')
@@ -65,6 +109,19 @@ export default function CoreValuesSectionPage() {
     setFormData(STATIC_DATA)
     setUploadedImage(null)
     setIsEditing(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 w-full">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          Core Values Section
+        </h1>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
