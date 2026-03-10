@@ -54,11 +54,10 @@ export default function AdminLogin() {
       const data = await response.json()
 
       if (response.ok) {
-        toast.success('Login successful! Redirecting to dashboard...')
-        // TODO: Handle successful login (redirect to dashboard)
-        setTimeout(() => {
-          window.location.href = '/admin/dashboard'
-        }, 1500)
+        toast.success('Login successful!')
+        // Clear form on successful login
+        setEmail('')
+        setPassword('')
       } else {
         toast.error(data.message || 'Invalid email or password')
       }
