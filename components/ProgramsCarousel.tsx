@@ -52,9 +52,17 @@ const ProgramsCarousel = () => {
   }
 
   return (
-    <section className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
+    <section className="w-full py-12">
+      {/* Title */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+          Our Programs
+        </h2>
+      </div>
+
       {/* Carousel Container */}
-      <div className="relative w-full h-full">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black">
         {/* Slides */}
         {slides.map((slide, index) => (
           <div
@@ -78,19 +86,19 @@ const ProgramsCarousel = () => {
         {/* Previous Button */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-2 sm:p-3 rounded-full transition"
+          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
           aria-label="Previous slide"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={18} />
         </button>
 
         {/* Next Button */}
         <button
           onClick={goToNext}
-          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-2 sm:p-3 rounded-full transition"
+          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
           aria-label="Next slide"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={18} />
         </button>
 
         {/* Dot Indicators */}
@@ -99,7 +107,7 @@ const ProgramsCarousel = () => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition ${
+              className={`w-3 h-3 rounded-full transition cursor-pointer ${
                 index === currentIndex
                   ? 'bg-white'
                   : 'bg-white/50 hover:bg-white/75'
@@ -107,6 +115,7 @@ const ProgramsCarousel = () => {
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
+        </div>
         </div>
       </div>
     </section>
