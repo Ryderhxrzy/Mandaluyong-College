@@ -126,152 +126,154 @@ export default function HeroSectionPage() {
         Hero Section
       </h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-        {isEditing && (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        {isEditing ? (
           <>
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Title
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
+            {/* Grid Layout: Form (left) and Preview (right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Left: Form Inputs */}
+              <div className="space-y-6">
+                {/* Title */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
 
-            {/* Subtitle */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={formData.subtitle}
-                onChange={(e) => handleInputChange('subtitle', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
+                {/* Subtitle */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Subtitle
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subtitle}
+                    onChange={(e) => handleInputChange('subtitle', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
 
-            {/* Background Image Upload - Cloudinary */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Upload New Image to Cloudinary
-              </label>
-              <CldUploadWidget
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                onSuccess={handleCloudinaryUpload}
-              >
-                {({ open }) => (
-                  <button
-                    type="button"
-                    onClick={() => open()}
-                    className="w-full px-4 py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 cursor-pointer"
+                {/* Background Image Upload - Cloudinary */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Upload New Image to Cloudinary
+                  </label>
+                  <CldUploadWidget
+                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                    onSuccess={handleCloudinaryUpload}
                   >
-                    <Upload size={18} />
-                    {uploadedImage ? 'Change Image' : 'Click to upload image'}
-                  </button>
-                )}
-              </CldUploadWidget>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {uploadedImage ? 'Image uploaded to Cloudinary' : 'Supported formats: JPG, PNG, GIF, WebP'}
-              </p>
-            </div>
+                    {({ open }) => (
+                      <button
+                        type="button"
+                        onClick={() => open()}
+                        className="w-full px-4 py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Upload size={18} />
+                        {uploadedImage ? 'Change Image' : 'Click to upload image'}
+                      </button>
+                    )}
+                  </CldUploadWidget>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {uploadedImage ? 'Image uploaded to Cloudinary' : 'Supported formats: JPG, PNG, GIF, WebP'}
+                  </p>
+                </div>
 
-            {/* Background Image URL */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Or Paste Image URL
-              </label>
-              <input
-                type="text"
-                value={formData.background_image_url}
-                onChange={(e) => handleInputChange('background_image_url', e.target.value)}
-                placeholder="e.g., https://example.com/image.jpg"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Paste an external image URL (will override uploaded image)
-              </p>
-            </div>
+                {/* Background Image URL */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Or Paste Image URL
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.background_image_url}
+                    onChange={(e) => handleInputChange('background_image_url', e.target.value)}
+                    placeholder="e.g., https://example.com/image.jpg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Paste an external image URL (will override uploaded image)
+                  </p>
+                </div>
 
-            {/* Is Active */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => handleInputChange('is_active', e.target.checked)}
-                className="w-4 h-4 rounded"
-              />
-              <label
-                htmlFor="is_active"
-                className="text-sm font-semibold text-gray-700 dark:text-gray-300"
-              >
-                Active
-              </label>
-            </div>
-          </>
-        )}
+                {/* Is Active */}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="is_active"
+                    checked={formData.is_active}
+                    onChange={(e) => handleInputChange('is_active', e.target.checked)}
+                    className="w-4 h-4 rounded"
+                  />
+                  <label
+                    htmlFor="is_active"
+                    className="text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    Active
+                  </label>
+                </div>
+              </div>
 
-        {/* Preview */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Preview
-          </h2>
-          <div
-            className="relative w-full h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700"
-            style={{
-              backgroundImage: formData.background_image_url
-                ? `url(${formData.background_image_url})`
-                : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/70"></div>
-            <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16 text-white">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
-                <span className="text-white block mb-1 sm:mb-2">{formData.title}</span>
-                <span style={{ color: '#50a2ff' }} className="block">
-                  {formData.subtitle}
-                </span>
-              </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-10 text-white max-w-4xl leading-relaxed font-medium">
-                {formData.description}
-              </p>
-              <div className="flex flex-row gap-2 sm:gap-4">
-                <button className="bg-primary text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-base border border-primary whitespace-nowrap cursor-pointer">
-                  Apply Now <ArrowRight size={16} />
-                </button>
-                <button className="border border-white text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm md:text-base whitespace-nowrap cursor-pointer">
-                  Explore Programs
-                </button>
+              {/* Right: Preview */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Preview
+                </h2>
+                <div
+                  className="relative w-full h-80 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  style={{
+                    backgroundImage: formData.background_image_url
+                      ? `url(${formData.background_image_url})`
+                      : undefined,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-black/70"></div>
+                  <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 text-white">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold mb-3 leading-tight tracking-tight">
+                      <span className="text-white block mb-1">{formData.title}</span>
+                      <span style={{ color: '#50a2ff' }} className="block">
+                        {formData.subtitle}
+                      </span>
+                    </h1>
+                    <p className="text-xs sm:text-sm text-white leading-relaxed font-normal max-w-2xl mb-3">
+                      {formData.description}
+                    </p>
+                    <div className="flex flex-row gap-2">
+                      <button className="bg-primary text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 text-xs sm:text-sm border border-primary whitespace-nowrap cursor-pointer">
+                        Apply Now <ArrowRight size={14} />
+                      </button>
+                      <button className="border border-white text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm whitespace-nowrap cursor-pointer">
+                        Explore Programs
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 justify-end pt-6">
-          {isEditing ? (
-            <>
+            {/* Action Buttons */}
+            <div className="flex gap-3 justify-end border-t border-gray-200 dark:border-gray-700 pt-6">
               <button
                 onClick={handleCancel}
                 className="px-6 py-2 bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition cursor-pointer"
@@ -285,16 +287,60 @@ export default function HeroSectionPage() {
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer"
-            >
-              Edit
-            </button>
-          )}
-        </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Preview */}
+            <div className="space-y-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Preview
+              </h2>
+              <div
+                className="relative w-full h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
+                style={{
+                  backgroundImage: formData.background_image_url
+                    ? `url(${formData.background_image_url})`
+                    : undefined,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
+                <div className="absolute inset-0 bg-black/70"></div>
+                <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16 text-white">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
+                    <span className="text-white block mb-1 sm:mb-2">{formData.title}</span>
+                    <span style={{ color: '#50a2ff' }} className="block">
+                      {formData.subtitle}
+                    </span>
+                  </h1>
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-10 text-white max-w-4xl leading-relaxed font-medium">
+                    {formData.description}
+                  </p>
+                  <div className="flex flex-row gap-2 sm:gap-4">
+                    <button className="bg-primary text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-base border border-primary whitespace-nowrap cursor-pointer">
+                      Apply Now <ArrowRight size={16} />
+                    </button>
+                    <button className="border border-white text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm md:text-base whitespace-nowrap cursor-pointer">
+                      Explore Programs
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 justify-end border-t border-gray-200 dark:border-gray-700 pt-6">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer"
+              >
+                Edit
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
