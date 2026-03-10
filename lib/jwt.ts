@@ -1,13 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose'
+import type { JWTPayload as JoseJWTPayload } from 'jose'
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-secret-do-not-use-in-production'
+  process.env.JWT_SECRET
 )
 
-export interface JWTPayload {
-  sub: string
-  email: string
-  role: string
+export interface JWTPayload extends JoseJWTPayload {
+  email?: string
+  role?: string
   fullName?: string
 }
 
