@@ -114,7 +114,7 @@ export default function Home() {
         </section>
 
         {/* Academic Commitment */}
-        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
+        <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
           <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
             <div className="text-center mb-12 md:mb-16">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
@@ -178,17 +178,17 @@ export default function Home() {
         <ProgramsCarousel />
 
         {/* CTA Section */}
-        <section className="bg-primary text-white py-16">
+        <section className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 py-16">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Ready to Join Us?</h2>
-            <p className="text-sm sm:text-base md:text-xl mb-8 text-blue-100">
-              Take the first step towards your future at Mandaluyong College
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-white">Ready to Shape Your Future?</h2>
+            <p className="text-sm sm:text-base md:text-xl mb-8 text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Join a vibrant academic community where leadership, innovation, and excellence thrive. Whether you&apos;re just beginning or advancing your path, we&apos;re here to empower your journey.
             </p>
             <Link
               href="/admissions"
-              className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-medium hover:bg-blue-50 transition"
+              className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-[#003a7a] transition"
             >
-              Apply Now
+              Apply Now <ArrowRight size={20} />
             </Link>
           </div>
         </section>
