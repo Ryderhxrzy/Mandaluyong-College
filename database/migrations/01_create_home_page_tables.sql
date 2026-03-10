@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS public.quality_education_commitment_home_page (
 -- 5. Academic Programs (Carousel)
 CREATE TABLE IF NOT EXISTS public.academic_programs_home_page (
   id BIGSERIAL PRIMARY KEY,
-  program_name VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
   image VARCHAR(255),
   "order" INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
