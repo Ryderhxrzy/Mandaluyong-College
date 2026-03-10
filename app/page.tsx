@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, Users, Award, BookOpen, Target } from 'lucide-react'
+import ProgramsCarousel from '@/components/ProgramsCarousel'
 
 export default function Home() {
   return (
@@ -173,44 +174,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Programs Section */}
-        <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
-          <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-gray-900 dark:text-white">
-              Our Programs
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-              {[
-                { name: 'Nursing', description: 'Prepare for a career in healthcare with our comprehensive nursing program.' },
-                { name: 'Education', description: 'Develop teaching skills to inspire the next generation of learners.' },
-                { name: 'Business Administration', description: 'Master business fundamentals and leadership principles.' },
-                { name: 'Information Technology', description: 'Learn cutting-edge technology and software development.' },
-                { name: 'Public Administration', description: 'Train for service in government and public sector roles.' },
-              ].map((program) => (
-                <div
-                  key={program.name}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-dark overflow-hidden hover:shadow-xl transition"
-                >
-                  <div className="bg-gradient-to-r from-blue-500 to-primary h-40 flex items-center justify-center">
-                    <BookOpen size={60} className="text-white opacity-80" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      {program.name}
-                    </h3>
-                    <p className="text-gray-700 dark:text-gray-300 mb-4">{program.description}</p>
-                    <Link
-                      href={`/academics?program=${program.name.toLowerCase().replace(' ', '-')}`}
-                      className="text-primary font-medium hover:text-[#003a7a] transition flex items-center gap-2"
-                    >
-                      Learn More <ArrowRight size={16} />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Programs Section - Carousel */}
+        <ProgramsCarousel />
 
         {/* CTA Section */}
         <section className="bg-primary text-white py-16">
