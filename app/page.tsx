@@ -11,6 +11,14 @@ interface HeroData {
   is_active: boolean
 }
 
+interface CoreValuesData {
+  id: string
+  title: string
+  description: string
+  background_image_url: string
+  is_active: boolean
+}
+
 async function getHeroData(): Promise<HeroData | null> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
@@ -26,8 +34,24 @@ async function getHeroData(): Promise<HeroData | null> {
   }
 }
 
+async function getCoreValuesData(): Promise<CoreValuesData | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(
+      `${apiUrl}/api/admin/home/core-values`,
+      { cache: 'no-store' }
+    )
+    const data = await response.json()
+    return data.data || null
+  } catch (error) {
+    console.error('Error fetching core values data:', error)
+    return null
+  }
+}
+
 export default async function Home() {
   const heroData = await getHeroData()
+  const coreValuesData = await getCoreValuesData()
 
   const defaultHero: HeroData = {
     id: '1',
@@ -39,7 +63,17 @@ export default async function Home() {
     is_active: true,
   }
 
+  const defaultCoreValues: CoreValuesData = {
+    id: '1',
+    title: 'Core Values That Drive Excellence at Mandaluyong College of Science and Technology',
+    description:
+      'At MCST, we are committed to genuine public service and fostering care within our community. Our core values of discipline, action over words, nationalism, and excellence guide us in shaping responsible and innovative leaders.',
+    background_image_url: '/campus.png',
+    is_active: true,
+  }
+
   const hero = heroData || defaultHero
+  const coreValues = coreValuesData || defaultCoreValues
 
   return (
     <>
@@ -132,7 +166,7 @@ export default async function Home() {
         <section
           className="relative w-full py-24 md:py-32 flex items-center justify-center text-center overflow-hidden"
           style={{
-            backgroundImage: 'url(/campus.png)',
+            backgroundImage: `url(${coreValues.background_image_url})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -145,10 +179,10 @@ export default async function Home() {
           {/* Content */}
           <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight" style={{ color: '#50a2ff' }}>
-              Core Values That Drive Excellence at Mandaluyong College of Science and Technology
+              {coreValues.title}
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-white leading-relaxed font-normal max-w-3xl mx-auto">
-              At MCST, we are committed to genuine public service and fostering care within our community. Our core values of <span className="font-bold">discipline, action over words, nationalism, and excellence</span> guide us in shaping responsible and innovative leaders.
+              {coreValues.description}
             </p>
           </div>
         </section>
