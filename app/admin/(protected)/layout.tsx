@@ -45,12 +45,18 @@ export default function ProtectedLayout({
 
       {/* Sidebar mobile overlay */}
       {isSidebarOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="fixed inset-0 z-40 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/50 pointer-events-auto cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
+            role="button"
+            tabIndex={0}
+            aria-label="Close sidebar"
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') setIsSidebarOpen(false)
+            }}
           />
-          <div className="relative z-50 h-screen">
+          <div className="relative z-50 h-screen pointer-events-auto">
             <AdminSidebar onClose={() => setIsSidebarOpen(false)} />
           </div>
         </div>

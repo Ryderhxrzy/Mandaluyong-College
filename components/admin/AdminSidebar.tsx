@@ -25,6 +25,7 @@ import {
   FileText,
   Clipboard,
   Library,
+  X,
 } from 'lucide-react'
 
 interface NavItem {
@@ -140,19 +141,29 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
           />
           <span className="font-semibold text-gray-900 dark:text-white text-sm">MCST</span>
         </div>
-        {mounted && (
+        <div className="flex items-center gap-2">
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition cursor-pointer"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <Sun size={18} className="text-yellow-500" />
+              ) : (
+                <Moon size={18} className="text-gray-600" />
+              )}
+            </button>
+          )}
+          {/* Close button on mobile */}
           <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition cursor-pointer"
-            aria-label="Toggle theme"
+            onClick={onClose}
+            className="p-2 lg:hidden hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition cursor-pointer"
+            aria-label="Close sidebar"
           >
-            {theme === 'dark' ? (
-              <Sun size={18} className="text-yellow-500" />
-            ) : (
-              <Moon size={18} className="text-gray-600" />
-            )}
+            <X size={18} className="text-gray-600 dark:text-gray-400" />
           </button>
-        )}
+        </div>
       </div>
 
       {/* Navigation */}
