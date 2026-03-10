@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import PublicLayoutShell from "@/components/PublicLayoutShell";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased overflow-x-hidden pt-16 md:pt-20`}
+        className={`${inter.variable} font-sans antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
@@ -31,9 +30,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          {children}
-          <Footer />
+          <PublicLayoutShell>
+            {children}
+          </PublicLayoutShell>
         </ThemeProvider>
       </body>
     </html>
