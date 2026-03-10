@@ -63,7 +63,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${isSolid
-        ? 'bg-white shadow-md dark:bg-slate-900 dark:border-b dark:border-slate-800'
+        ? 'bg-white border-b border-gray-200 dark:bg-slate-900 dark:border-slate-800'
         : 'bg-transparent'
         }`}
     >
