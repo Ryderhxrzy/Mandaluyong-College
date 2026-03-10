@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { CldUploadWidget } from 'next-cloudinary'
 
 interface HeroSection {
   id: string
@@ -61,20 +62,15 @@ export default function HeroSectionPage() {
     })
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result as string
-        setUploadedImage(result)
-        // Also update the background_image_url for preview
-        setFormData({
-          ...formData,
-          background_image_url: result,
-        })
-      }
-      reader.readAsDataURL(file)
+  const handleCloudinaryUpload = (result: any) => {
+    if (result.event === 'success') {
+      const imageUrl = result.info.secure_url
+      setUploadedImage(imageUrl)
+      setFormData({
+        ...formData,
+        background_image_url: imageUrl,
+      })
+      toast.success('Image uploaded successfully!')
     }
   }
 
@@ -172,19 +168,28 @@ export default function HeroSectionPage() {
               />
             </div>
 
-            {/* Background Image Upload */}
+            {/* Background Image Upload - Cloudinary */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Upload New Image
+                Upload New Image to Cloudinary
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                onSuccess={handleCloudinaryUpload}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="w-full px-4 py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Upload size={18} />
+                    {uploadedImage ? 'Change Image' : 'Click to upload image'}
+                  </button>
+                )}
+              </CldUploadWidget>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {uploadedImage ? 'Image selected and ready to use' : 'Supported formats: JPG, PNG, GIF, WebP'}
+                {uploadedImage ? 'Image uploaded to Cloudinary' : 'Supported formats: JPG, PNG, GIF, WebP'}
               </p>
             </div>
 
