@@ -2,14 +2,52 @@ import Link from 'next/link'
 import { ArrowRight, Users, Award, BookOpen, Target } from 'lucide-react'
 import ProgramsCarousel from '@/components/ProgramsCarousel'
 
-export default function Home() {
+interface HeroData {
+  id: string
+  title: string
+  subtitle: string
+  description: string
+  background_image_url: string
+  is_active: boolean
+}
+
+async function getHeroData(): Promise<HeroData | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(
+      `${apiUrl}/api/admin/home/hero/save`,
+      { cache: 'no-store' }
+    )
+    const data = await response.json()
+    return data.data || null
+  } catch (error) {
+    console.error('Error fetching hero data:', error)
+    return null
+  }
+}
+
+export default async function Home() {
+  const heroData = await getHeroData()
+
+  const defaultHero: HeroData = {
+    id: '1',
+    title: 'Shaping Tomorrow&apos;s Innovators at',
+    subtitle: 'Mandaluyong College of Science and Technology',
+    description:
+      'Discover a future built on innovation and excellence. Our programs in Information Systems, Mathematics, Communication, Public Administration, and Physical Education equip students with the skills and mindset to thrive in a technology-driven world.',
+    background_image_url: '/mcst.jpg',
+    is_active: true,
+  }
+
+  const hero = heroData || defaultHero
+
   return (
     <>
       {/* Hero Section with Background Image - Full Screen */}
       <section
         className="relative w-full min-h-screen flex items-center text-white overflow-hidden -mt-16 md:-mt-20"
         style={{
-          backgroundImage: 'url(/mcst.jpg)',
+          backgroundImage: `url(${hero.background_image_url})`,
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -22,11 +60,13 @@ export default function Home() {
         {/* Hero Section Content */}
         <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
-            <span className="text-white block mb-1 sm:mb-2">Shaping Tomorrow's Innovators at</span>
-            <span style={{ color: '#50a2ff' }} className="block">Mandaluyong College of Science and Technology</span>
+            <span className="text-white block mb-1 sm:mb-2">{hero.title}</span>
+            <span style={{ color: '#50a2ff' }} className="block">
+              {hero.subtitle}
+            </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-10 text-white max-w-4xl leading-relaxed font-medium">
-            Discover a future built on innovation and excellence. Our programs in Information Systems, Mathematics, Communication, Public Administration, and Physical Education equip students with the skills and mindset to thrive in a technology-driven world.
+            {hero.description}
           </p>
           <div className="flex flex-row gap-2 sm:gap-4">
             <Link
