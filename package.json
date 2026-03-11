@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.0",
+    "@upstash/redis": "^1.36.4",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.9.0",
     "jose": "^6.2.1",
