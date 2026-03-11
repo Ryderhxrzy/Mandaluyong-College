@@ -108,7 +108,7 @@ const ProgramsCarousel = () => {
 
       {/* Carousel Container */}
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black">
+        <div className="relative w-full h-56 sm:h-72 md:h-96 overflow-hidden rounded-lg bg-black">
         {/* Slides */}
         {slides.map((slide, index) => (
           <div
