@@ -14,6 +14,21 @@ export async function POST(request: Request) {
       )
     }
 
+    // Check if order already exists (excluding current program if updating)
+    const { data: existingOrder } = await supabaseAdmin
+      .from('academic_programs_home_page')
+      .select('id')
+      .eq('order', order || 0)
+      .neq('id', id || 0)
+      .single()
+
+    if (existingOrder) {
+      return NextResponse.json(
+        { error: 'This order number is already taken. Please use a different order number.' },
+        { status: 400 }
+      )
+    }
+
     if (id) {
       // Update existing program
       const { data, error } = await supabaseAdmin
