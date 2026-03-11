@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { Users, Target, Zap, Heart } from 'lucide-react'
 
 export default function About() {
   return (
@@ -72,71 +71,70 @@ export default function About() {
         </div>
       </section>
 
-      {/* History */}
+      {/* Goals & Philosophy */}
       <section className="py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">Our History</h2>
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <p className="text-lg text-gray-700 mb-4">
-              Mandaluyong College was founded with the vision of providing quality education
-              to the communities of Mandaluyong and the Metro Manila region. Over the years,
-              we have grown from a small institution to a comprehensive college offering
-              multiple degree programs across various disciplines.
-            </p>
-            <p className="text-lg text-gray-700 mb-4">
-              Our commitment to academic excellence and student development has earned us
-              recognition as a trusted educational institution. We continue to evolve and
-              adapt to meet the changing needs of our students and society.
-            </p>
-            <p className="text-lg text-gray-700">
-              Today, Mandaluyong College stands as a beacon of educational excellence,
-              dedicated to shaping tomorrow's innovators and leaders.
-            </p>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div>
+              {/* Goals */}
+              <div className="mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Goals</h2>
+                <ul className="space-y-4">
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-gray-700">Provide Mandaleño access to quality higher education.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-gray-700">Support optimum advancement in instruction, technology, research, innovation, and resource generation.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-gray-700">Collaborate with various educational, technical, and professional stakeholders for genuine public service.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-gray-700">Foster institutional effectiveness and efficiency for continuous improvement and total quality management.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold mt-1">•</span>
+                    <span className="text-gray-700">Produce graduates who are locally and internationally competent with a high sense of nationalism.</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Philosophy */}
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Philosophy</h2>
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  Mandaluyong College of Science and Technology advocates the culture of excellence in science and technology that is anchored on the principles of quality instruction, dynamic research and innovation, continuous improvement, public service, and nationalism.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Image */}
+            <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-4 border-gray-200 shadow-lg">
+              <Image src="/goals.jpg" alt="MCST Goals" fill className="object-cover" />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-16 text-gray-900">
-            Our Core Values
-          </h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="text-blue-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Discipline</h3>
-              <p className="text-gray-700">
-                Commitment to excellence through self-control and dedication.
+      {/* Mission & Vision */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Our Mission</h2>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                To cultivate a culture of excellence in Science and Technology pursuing the improvement of the quality of life of every Mandaleño to bring about the city&apos;s sustainable development and resiliency towards nation building.
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="text-green-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Action</h3>
-              <p className="text-gray-700">
-                Transforming words into meaningful actions and results.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="text-red-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Leadership</h3>
-              <p className="text-gray-700">
-                Developing responsible leaders who serve their communities.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="text-purple-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Excellence</h3>
-              <p className="text-gray-700">
-                Striving for the highest standards in everything we do.
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Our Vision</h2>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                A college of distinction in Science and Technology committed to produce high caliber and employable graduates.
               </p>
             </div>
           </div>
