@@ -16,6 +16,7 @@ const ProgramsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
   const [slides, setSlides] = useState<Program[]>([])
+  const [sectionTitle, setSectionTitle] = useState('Our Programs')
 
   const DEFAULT_SLIDES: Program[] = [
     {
@@ -54,7 +55,11 @@ const ProgramsCarousel = () => {
       if (response.ok) {
         const data = await response.json()
         const activeSlides = (data || []).filter((p: Program) => p.is_active && p.image)
-        setSlides(activeSlides.length > 0 ? activeSlides : DEFAULT_SLIDES)
+        const slidesToSet = activeSlides.length > 0 ? activeSlides : DEFAULT_SLIDES
+        setSlides(slidesToSet)
+        if (slidesToSet.length > 0 && slidesToSet[0].title) {
+          setSectionTitle(slidesToSet[0].title)
+        }
       } else {
         setSlides(DEFAULT_SLIDES)
       }
@@ -97,7 +102,7 @@ const ProgramsCarousel = () => {
       {/* Title */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-          Our Programs
+          {sectionTitle}
         </h2>
       </div>
 
