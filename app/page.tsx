@@ -79,7 +79,7 @@ export default async function Home() {
     <>
       {/* Hero Section with Background Image - Full Screen */}
       <section
-        className="relative w-full min-h-screen flex items-center text-white overflow-hidden -mt-16 md:-mt-20"
+        className="relative w-full min-h-screen flex items-center text-white overflow-hidden -mt-14 md:-mt-16"
         style={{
           backgroundImage: `url(${hero.background_image_url})`,
           backgroundSize: '100% 100%',

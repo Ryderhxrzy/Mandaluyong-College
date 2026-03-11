@@ -70,7 +70,7 @@ export default function Header() {
         : 'bg-transparent'
         }`}
     >
-      <nav className="max-w-[1400px] mx-auto w-full px-8 md:px-16 py-4 flex justify-between items-center">
+      <nav className="max-w-[1400px] mx-auto w-full px-8 md:px-16 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 relative flex-shrink-0">
@@ -173,7 +173,7 @@ export default function Header() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className={`lg:hidden border-t ${isSolid ? 'bg-gray-50 border-gray-200 dark:bg-slate-900 dark:border-slate-800' : 'bg-black/95 border-gray-800'}`}>
-          <div className="w-full px-8 md:px-16 py-4 flex flex-col gap-4">
+          <div className="w-full px-8 md:px-16 py-3 flex flex-col gap-4">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
               return (

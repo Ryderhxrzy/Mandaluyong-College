@@ -9,7 +9,7 @@ export default function PublicLayoutShell({ children }: { children: React.ReactN
   const isAdminPath = pathname.startsWith('/admin')
 
   return (
-    <div className={isAdminPath ? '' : 'pt-16 md:pt-20'}>
+    <div className={isAdminPath ? '' : 'pt-14 md:pt-16'}>
       {!isAdminPath && <Header />}
       {children}
       {!isAdminPath && <Footer />}
