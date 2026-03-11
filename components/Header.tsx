@@ -54,6 +54,9 @@ export default function Header() {
       setIsScrolled(window.scrollY > 50)
     }
 
+    // Check initial scroll position on mount
+    setIsScrolled(window.scrollY > 50)
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
