@@ -128,8 +128,9 @@ export default function AcademicProgramsPage() {
         }),
       })
 
+      const result = await response.json()
+
       if (response.ok) {
-        const result = await response.json()
         const newProgram = result.data || result
         setPrograms([...programs, newProgram])
         setFormData({
@@ -141,7 +142,7 @@ export default function AcademicProgramsPage() {
         })
         toast.success('Program added successfully!')
       } else {
-        toast.error('Failed to add program')
+        toast.error(result.error || 'Failed to add program')
       }
     } catch (error) {
       console.error('Error adding program:', error)
@@ -179,8 +180,9 @@ export default function AcademicProgramsPage() {
         }),
       })
 
+      const result = await response.json()
+
       if (response.ok) {
-        const result = await response.json()
         const updatedProgram = result.data || result
         setPrograms(
           programs.map(p =>
@@ -203,7 +205,7 @@ export default function AcademicProgramsPage() {
         })
         toast.success('Program updated successfully!')
       } else {
-        toast.error('Failed to update program')
+        toast.error(result.error || 'Failed to update program')
       }
     } catch (error) {
       console.error('Error updating program:', error)
