@@ -4,24 +4,64 @@ import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 
+interface Program {
+  id: number
+  title: string
+  image: string | null
+  order: number
+  is_active: boolean
+}
+
 const ProgramsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
+  const [slides, setSlides] = useState<Program[]>([])
 
-  const slides = [
+  const DEFAULT_SLIDES: Program[] = [
     {
-      image: '/administration.jpg',
+      id: 1,
       title: 'Administration',
+      image: '/administration.jpg',
+      order: 1,
+      is_active: true,
     },
     {
-      image: '/nursing.webp',
+      id: 2,
       title: 'Nursing',
+      image: '/nursing.webp',
+      order: 2,
+      is_active: true,
     },
     {
-      image: '/pe.jpg',
+      id: 3,
       title: 'Physical Education',
+      image: '/pe.jpg',
+      order: 3,
+      is_active: true,
     },
   ]
+
+  useEffect(() => {
+    fetchPrograms()
+  }, [])
+
+  const fetchPrograms = async () => {
+    try {
+      const response = await fetch('/api/admin/home/academic-programs', {
+        cache: 'no-store',
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const activeSlides = (data || []).filter((p: Program) => p.is_active && p.image)
+        setSlides(activeSlides.length > 0 ? activeSlides : DEFAULT_SLIDES)
+      } else {
+        setSlides(DEFAULT_SLIDES)
+      }
+    } catch (error) {
+      console.error('Error fetching programs:', error)
+      setSlides(DEFAULT_SLIDES)
+    }
+  }
 
   useEffect(() => {
     if (!autoPlay) return
@@ -66,18 +106,20 @@ const ProgramsCarousel = () => {
         {/* Slides */}
         {slides.map((slide, index) => (
           <div
-            key={index}
+            key={slide.id}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <Image
-              src={slide.image}
-              alt={slide.title}
-              fill
-              className="object-cover"
-              priority={index === 0}
-            />
+            {slide.image && (
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+            )}
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/40"></div>
           </div>
