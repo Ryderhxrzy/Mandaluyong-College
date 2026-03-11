@@ -20,7 +20,12 @@ export default function AdminLogin() {
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    // Check if already logged in
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      router.push('/admin/dashboard')
+    }
+  }, [router])
 
   const isDark = theme === 'dark'
 
