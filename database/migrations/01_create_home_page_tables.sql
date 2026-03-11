@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS public.quality_education_commitment_home_page (
 CREATE TABLE IF NOT EXISTS public.academic_programs_home_page (
   id BIGSERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
+  course_name VARCHAR(255),
   image VARCHAR(255),
   "order" INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
