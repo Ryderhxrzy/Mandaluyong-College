@@ -20,7 +20,7 @@ const STATIC_DATA: HeroSection = {
   subtitle: 'Mandaluyong College of Science and Technology',
   description:
     'Discover a future built on innovation and excellence. Our programs in Information Systems, Mathematics, Communication, Public Administration, and Physical Education equip students with the skills and mindset to thrive in a technology-driven world.',
-  background_image_url: 'https://picsum.photos/1600/900?random=1',
+  background_image_url: '/mcst.jpg',
   is_active: true,
 }
 
@@ -243,7 +243,7 @@ export default function HeroSectionPage() {
                   Preview
                 </h2>
                 <div
-                  className="relative w-full h-80 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  className="relative w-full min-h-80 sm:min-h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
                   style={{
                     backgroundImage: formData.background_image_url
                       ? `url(${formData.background_image_url})`
@@ -254,21 +254,21 @@ export default function HeroSectionPage() {
                   }}
                 >
                   <div className="absolute inset-0 bg-black/70"></div>
-                  <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 text-white">
-                    <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold mb-3 leading-tight tracking-tight">
-                      <span className="text-white block mb-1">{formData.title}</span>
-                      <span style={{ color: '#50a2ff' }} className="block">
+                  <div className="relative z-10 w-full max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-4 text-white">
+                    <h1 className="text-xs sm:text-sm md:text-base font-extrabold mb-2 leading-tight tracking-tight">
+                      <span className="text-white block mb-1 text-xs sm:text-sm">{formData.title}</span>
+                      <span style={{ color: '#50a2ff' }} className="block text-xs sm:text-sm">
                         {formData.subtitle}
                       </span>
                     </h1>
-                    <p className="text-xs sm:text-sm text-white leading-relaxed font-normal max-w-2xl mb-3">
+                    <p className="text-xs text-white leading-relaxed font-normal max-w-2xl mb-2">
                       {formData.description}
                     </p>
-                    <div className="flex flex-row gap-2">
-                      <button className="bg-primary text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 text-xs sm:text-sm border border-primary whitespace-nowrap cursor-pointer">
-                        Apply Now <ArrowRight size={14} />
+                    <div className="flex flex-row gap-1 sm:gap-2">
+                      <button className="bg-primary text-white px-2 sm:px-3 py-1 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 text-xs border border-primary whitespace-nowrap cursor-pointer">
+                        Apply Now <ArrowRight size={12} />
                       </button>
-                      <button className="border border-white text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm whitespace-nowrap cursor-pointer">
+                      <button className="border border-white text-white px-2 sm:px-3 py-1 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs whitespace-nowrap cursor-pointer">
                         Explore Programs
                       </button>
                     </div>
@@ -302,7 +302,7 @@ export default function HeroSectionPage() {
                 Preview
               </h2>
               <div
-                className="relative w-full h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
+                className="relative w-full min-h-96 sm:min-h-screen lg:min-h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
                 style={{
                   backgroundImage: formData.background_image_url
                     ? `url(${formData.background_image_url})`
