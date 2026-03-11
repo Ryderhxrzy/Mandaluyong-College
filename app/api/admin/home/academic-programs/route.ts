@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET() {
   try {
+    // Try to get from cache first
+    const cached = await redis.get(cacheKeys.academicPrograms)
+    if (cached) {
+      return NextResponse.json(cached)
+    }
+
+    // If not in cache, fetch from database
     const { data, error } = await supabaseAdmin
       .from('academic_programs_home_page')
       .select('*')
@@ -10,6 +18,11 @@ export async function GET() {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    // Store in cache
+    if (data) {
+      await redis.setex(cacheKeys.academicPrograms, CACHE_TTL, data)
     }
 
     return NextResponse.json(data || [])
@@ -42,6 +55,9 @@ export async function DELETE(request: Request) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
+
+    // Invalidate cache
+    await redis.del(cacheKeys.academicPrograms)
 
     return NextResponse.json({ success: true })
   } catch (error) {
