@@ -1,168 +1,678 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Upload, Plus, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import Image from 'next/image'
 
 interface AcademicProgram {
-  id: string
-  name: string
-  description: string
+  id: number
+  title: string
+  image: string | null
   order: number
   is_active: boolean
+  course_name?: string
 }
 
 const STATIC_DATA: AcademicProgram[] = [
   {
-    id: '1',
-    name: 'Bachelor of Science in Computer Science',
-    description:
-      'Comprehensive program covering software development, data science, and artificial intelligence.',
+    id: 1,
+    title: 'Our Programs',
+    image: '/administration.jpg',
     order: 1,
     is_active: true,
+    course_name: 'Administration',
   },
   {
-    id: '2',
-    name: 'Bachelor of Science in Information Technology',
-    description:
-      'Focus on IT infrastructure, network management, and cybersecurity.',
+    id: 2,
+    title: 'Our Programs',
+    image: '/nursing.webp',
     order: 2,
     is_active: true,
+    course_name: 'Nursing',
   },
   {
-    id: '3',
-    name: 'Bachelor of Science in Engineering',
-    description:
-      'Diverse engineering specializations including civil, mechanical, and electrical engineering.',
+    id: 3,
+    title: 'Our Programs',
+    image: '/pe.jpg',
     order: 3,
     is_active: true,
-  },
-  {
-    id: '4',
-    name: 'Bachelor of Science in Business Administration',
-    description:
-      'Management and entrepreneurship program preparing students for business leadership.',
-    order: 4,
-    is_active: true,
-  },
-  {
-    id: '5',
-    name: 'Bachelor of Science in Education',
-    description:
-      'Teacher preparation program emphasizing innovative educational methodologies.',
-    order: 5,
-    is_active: true,
+    course_name: 'Physical Education',
   },
 ]
 
 export default function AcademicProgramsPage() {
-  const [items, setItems] = useState<AcademicProgram[]>(STATIC_DATA)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editData, setEditData] = useState<Partial<AcademicProgram>>({})
+  const [programs, setPrograms] = useState<AcademicProgram[]>(STATIC_DATA)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isEditing, setIsEditing] = useState(false)
+  const [sectionTitle, setSectionTitle] = useState('Our Programs')
+  const [formData, setFormData] = useState<Partial<AcademicProgram>>({
+    title: '',
+    image: null,
+    order: 0,
+    is_active: true,
+    course_name: '',
+  })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const handleEdit = (item: AcademicProgram) => {
-    setEditingId(item.id)
-    setEditData(item)
+  useEffect(() => {
+    fetchPrograms()
+  }, [])
+
+  const fetchPrograms = async () => {
+    try {
+      const response = await fetch('/api/admin/home/academic-programs')
+      if (response.ok) {
+        const data = await response.json()
+        const programsData = data.length > 0 ? data : STATIC_DATA
+        setPrograms(programsData)
+        if (programsData.length > 0 && programsData[0].title) {
+          setSectionTitle(programsData[0].title)
+        }
+      } else {
+        setPrograms(STATIC_DATA)
+      }
+    } catch (error) {
+      console.error('Error fetching programs:', error)
+      setPrograms(STATIC_DATA)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleInputChange = (field: string, value: any) => {
-    setEditData({
-      ...editData,
+  const handleInputChange = (field: string, value: string | number | boolean) => {
+    setFormData({
+      ...formData,
       [field]: value,
     })
   }
 
-  const handleSave = (id: string) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, ...editData } : item
-      )
+  const handleCloudinaryUpload = (results: CloudinaryUploadWidgetResults) => {
+    if (
+      results.event === 'success' &&
+      results.info &&
+      typeof results.info === 'object' &&
+      'secure_url' in results.info
+    ) {
+      const imageUrl = (results.info as { secure_url: string }).secure_url
+      setFormData(prev => ({
+        ...prev,
+        image: imageUrl,
+      }))
+      toast.success('Image uploaded successfully!')
+    }
+  }
+
+  const handleAddProgram = async () => {
+    if (!formData.course_name) {
+      toast.error('Please enter a course name')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/admin/home/academic-programs/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          section_title: sectionTitle,
+          image: formData.image,
+          order: parseInt(String(formData.order), 10),
+          is_active: formData.is_active,
+          course_name: formData.course_name,
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        const newProgram = result.data || result
+        setPrograms([...programs, newProgram])
+        setFormData({
+          title: '',
+          image: null,
+          order: 0,
+          is_active: true,
+          course_name: '',
+        })
+        toast.success('Program added successfully!')
+      } else {
+        toast.error('Failed to add program')
+      }
+    } catch (error) {
+      console.error('Error adding program:', error)
+      toast.error('An error occurred while adding')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleEditProgram = (program: AcademicProgram) => {
+    setFormData(program)
+    setEditingId(program.id)
+    setIsEditing(true)
+  }
+
+  const handleUpdateProgram = async () => {
+    if (!formData.course_name) {
+      toast.error('Please enter a course name')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/admin/home/academic-programs/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingId,
+          section_title: sectionTitle,
+          image: formData.image,
+          order: parseInt(String(formData.order), 10),
+          is_active: formData.is_active,
+          course_name: formData.course_name,
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        const updatedProgram = result.data || result
+        setPrograms(
+          programs.map(p =>
+            p.id === editingId
+              ? {
+                  ...p,
+                  ...updatedProgram,
+                }
+              : p
+          )
+        )
+        setEditingId(null)
+        setIsEditing(false)
+        setFormData({
+          title: '',
+          image: null,
+          order: 0,
+          is_active: true,
+          course_name: '',
+        })
+        toast.success('Program updated successfully!')
+      } else {
+        toast.error('Failed to update program')
+      }
+    } catch (error) {
+      console.error('Error updating program:', error)
+      toast.error('An error occurred while updating')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDeleteProgram = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this program?')) return
+
+    try {
+      const response = await fetch('/api/admin/home/academic-programs', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+
+      if (response.ok) {
+        setPrograms(programs.filter(p => p.id !== id))
+        if (editingId === id) {
+          setEditingId(null)
+          setIsEditing(false)
+          setFormData({
+            title: '',
+            image: null,
+            order: 0,
+            is_active: true,
+          })
+        }
+        toast.success('Program deleted successfully!')
+      } else {
+        toast.error('Failed to delete program')
+      }
+    } catch (error) {
+      console.error('Error deleting program:', error)
+      toast.error('An error occurred while deleting')
+    }
+  }
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev - 1 + programs.length) % programs.length)
+  }
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % programs.length)
+  }
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 w-full">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          Academic Programs
+        </h1>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
     )
-    setEditingId(null)
   }
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-6 w-full">
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
         Academic Programs
       </h1>
 
-      <div className="space-y-4">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow p-4"
-          >
-            {editingId === item.id ? (
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={editData.name || ''}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Program Name"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                <textarea
-                  value={editData.description || ''}
-                  onChange={(e) =>
-                    handleInputChange('description', e.target.value)
-                  }
-                  placeholder="Description"
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                <div className="flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        {isEditing ? (
+          <>
+            {/* Grid Layout: Form (left) and Preview (right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Left: Form Inputs */}
+              <div className="space-y-6">
+                {/* Section Title */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Section Title
+                  </label>
+                  <input
+                    type="text"
+                    value={sectionTitle}
+                    onChange={(e) => setSectionTitle(e.target.value)}
+                    placeholder="e.g., Our Programs"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Course Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Course Name (for image naming)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.course_name || ''}
+                    onChange={(e) => handleInputChange('course_name', e.target.value)}
+                    placeholder="e.g., BSA"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Upload Image to Cloudinary
+                  </label>
+                  <CldUploadWidget
+                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                    onSuccess={handleCloudinaryUpload}
+                  >
+                    {({ open }) => (
+                      <button
+                        type="button"
+                        onClick={() => open()}
+                        className="w-full px-4 py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Upload size={18} />
+                        {formData.image ? 'Change Image' : 'Click to upload image'}
+                      </button>
+                    )}
+                  </CldUploadWidget>
+                  {formData.image && (
+                    <div className="mt-3">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Image Link
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.image}
+                        readOnly
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-600 dark:text-gray-300 cursor-not-allowed text-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Order */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Display Order
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.order || 0}
+                    onChange={(e) => handleInputChange('order', parseInt(e.target.value))}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Is Active */}
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    id={`active-${item.id}`}
-                    checked={editData.is_active || false}
-                    onChange={(e) =>
-                      handleInputChange('is_active', e.target.checked)
-                    }
+                    id="is_active"
+                    checked={formData.is_active !== false}
+                    onChange={(e) => handleInputChange('is_active', e.target.checked)}
+                    className="w-4 h-4 rounded"
                   />
                   <label
-                    htmlFor={`active-${item.id}`}
-                    className="text-sm text-gray-700 dark:text-gray-300"
+                    htmlFor="is_active"
+                    className="text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     Active
                   </label>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleSave(item.id)}
-                    className="px-3 py-1 bg-primary text-white rounded text-sm hover:bg-[#003a7a]"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white rounded text-sm"
-                  >
-                    Cancel
-                  </button>
+              </div>
+
+              {/* Right: Preview */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Preview
+                </h2>
+
+                {/* Section Title */}
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
+                  {sectionTitle}
+                </h3>
+
+                {/* Carousel */}
+                <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black mb-4">
+                  {programs.length > 0 && programs[currentIndex] && (
+                    <>
+                      {programs[currentIndex].image ? (
+                        <Image
+                          src={programs[currentIndex].image}
+                          alt={programs[currentIndex].title}
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-400 dark:bg-gray-600 flex items-center justify-center">
+                          <span className="text-gray-600 dark:text-gray-400">No image</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/40"></div>
+
+                      {/* Navigation Buttons */}
+                      {programs.length > 1 && (
+                        <>
+                          <button
+                            onClick={goToPrevious}
+                            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+                          <button
+                            onClick={goToNext}
+                            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
+                          >
+                            <ChevronRight size={18} />
+                          </button>
+
+                          {/* Dot Indicators */}
+                          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-3">
+                            {programs.map((_, index) => (
+                              <button
+                                key={index}
+                                onClick={() => goToSlide(index)}
+                                className={`w-3 h-3 rounded-full transition cursor-pointer ${
+                                  index === currentIndex
+                                    ? 'bg-white'
+                                    : 'bg-white/50 hover:bg-white/75'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Programs List */}
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Programs ({programs.length})
+                  </p>
+                  {programs.map((program, index) => (
+                    <div
+                      key={`${program.id}-${index}`}
+                      className={`p-3 rounded-lg border-2 transition cursor-pointer ${
+                        index === currentIndex
+                          ? 'border-primary bg-primary/10 dark:bg-primary/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700'
+                      }`}
+                      onClick={() => goToSlide(index)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {program.course_name || program.title}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Order: {program.order}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleEditProgram(program)
+                            }}
+                            className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteProgram(program.id)
+                            }}
+                            className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition cursor-pointer"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ) : (
-              <div
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded"
-                onClick={() => handleEdit(item)}
-              >
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {item.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {item.description}
-                </p>
-                <p className="text-xs text-gray-500 mt-2">
-                  {item.is_active ? '✓ Active' : '✗ Inactive'}
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+            </div>
 
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
-        Changes are saved locally. Database integration coming soon...
-      </p>
+            {/* Action Buttons */}
+            <div className="flex gap-3 justify-end border-t border-gray-200 dark:border-gray-700 pt-6">
+              <button
+                onClick={() => {
+                  setIsEditing(false)
+                  setEditingId(null)
+                  setFormData({
+                    title: '',
+                    image: null,
+                    order: 0,
+                    is_active: true,
+                  })
+                }}
+                className="px-6 py-2 bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              {editingId ? (
+                <button
+                  onClick={handleUpdateProgram}
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              ) : (
+                <button
+                  onClick={handleAddProgram}
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Plus size={18} />
+                  {isSaving ? 'Adding...' : 'Add Program'}
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Preview Only */}
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Preview
+              </h2>
+
+              {/* Section Container */}
+              <div className="w-full">
+                {/* Section Title */}
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
+                  <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+                    {sectionTitle}
+                  </h3>
+                </div>
+
+                {/* Carousel Container */}
+                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                  {/* Carousel */}
+                  <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black">
+                {programs.length > 0 && programs[currentIndex] && (
+                  <>
+                    {programs[currentIndex].image ? (
+                      <Image
+                        src={programs[currentIndex].image}
+                        alt={programs[currentIndex].title}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gray-400 dark:bg-gray-600 flex items-center justify-center">
+                        <span className="text-gray-600 dark:text-gray-400">No image</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/40"></div>
+
+                    {/* Navigation Buttons */}
+                    {programs.length > 1 && (
+                      <>
+                        <button
+                          onClick={goToPrevious}
+                          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button
+                          onClick={goToNext}
+                          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+
+                        {/* Dot Indicators */}
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-3">
+                          {programs.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => goToSlide(index)}
+                              className={`w-3 h-3 rounded-full transition cursor-pointer ${
+                                index === currentIndex
+                                  ? 'bg-white'
+                                  : 'bg-white/50 hover:bg-white/75'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Programs List with Edit/Delete */}
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Programs ({programs.length})
+                </p>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {programs.map((program, index) => (
+                    <div
+                      key={`${program.id}-${index}`}
+                      className={`p-3 rounded-lg border-2 transition ${
+                        index === currentIndex
+                          ? 'border-primary bg-primary/10 dark:bg-primary/20'
+                          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div
+                          className="flex-1 cursor-pointer"
+                          onClick={() => goToSlide(index)}
+                        >
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {program.course_name || program.title}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Order: {program.order}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditProgram(program)}
+                            className="px-3 py-1 text-sm bg-primary text-white rounded hover:bg-[#003a7a] transition cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProgram(program.id)}
+                            className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition cursor-pointer"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 justify-end border-t border-gray-200 dark:border-gray-700 pt-6">
+              <button
+                onClick={() => {
+                  setIsEditing(true)
+                  setEditingId(null)
+                  setFormData({
+                    title: '',
+                    image: null,
+                    order: 0,
+                    is_active: true,
+                  })
+                }}
+                className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer"
+              >
+                Edit
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }
