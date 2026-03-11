@@ -44,8 +44,8 @@ export default function AdminLogin() {
     }
 
     try {
-      // TODO: Replace with your actual authentication API
-      const response = await fetch('/api/admin/login', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

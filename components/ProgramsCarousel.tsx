@@ -47,7 +47,8 @@ const ProgramsCarousel = () => {
 
   const fetchPrograms = async () => {
     try {
-      const response = await fetch('/api/admin/home/academic-programs', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/academic-programs`, {
         cache: 'no-store',
       })
       if (response.ok) {

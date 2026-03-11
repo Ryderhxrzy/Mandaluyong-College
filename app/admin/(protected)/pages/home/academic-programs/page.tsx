@@ -64,7 +64,8 @@ export default function AcademicProgramsPage() {
 
   const fetchPrograms = async () => {
     try {
-      const response = await fetch('/api/admin/home/academic-programs')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/academic-programs`)
       if (response.ok) {
         const data = await response.json()
         const programsData = data.length > 0 ? data : STATIC_DATA
@@ -114,7 +115,8 @@ export default function AcademicProgramsPage() {
 
     setIsSaving(true)
     try {
-      const response = await fetch('/api/admin/home/academic-programs/save', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/academic-programs/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -163,7 +165,8 @@ export default function AcademicProgramsPage() {
 
     setIsSaving(true)
     try {
-      const response = await fetch('/api/admin/home/academic-programs/save', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/academic-programs/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -214,7 +217,8 @@ export default function AcademicProgramsPage() {
     if (!confirm('Are you sure you want to delete this program?')) return
 
     try {
-      const response = await fetch('/api/admin/home/academic-programs', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/academic-programs`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),

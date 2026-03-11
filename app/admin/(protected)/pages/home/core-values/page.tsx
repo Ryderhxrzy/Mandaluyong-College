@@ -35,7 +35,8 @@ export default function CoreValuesSectionPage() {
 
   const fetchCoreValuesData = async () => {
     try {
-      const response = await fetch('/api/admin/home/core-values')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/core-values`)
       const data = await response.json()
 
       if (response.ok && data.data) {
@@ -80,7 +81,8 @@ export default function CoreValuesSectionPage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      const response = await fetch('/api/admin/home/core-values', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/core-values/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

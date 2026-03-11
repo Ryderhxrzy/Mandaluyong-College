@@ -37,7 +37,8 @@ export default function HeroSectionPage() {
 
   const fetchHeroData = async () => {
     try {
-      const response = await fetch('/api/admin/home/hero/save')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/hero/save`)
       const data = await response.json()
 
       if (response.ok && data.data) {
@@ -82,7 +83,8 @@ export default function HeroSectionPage() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      const response = await fetch('/api/admin/home/hero/save', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/home/hero/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

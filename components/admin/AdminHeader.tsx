@@ -18,7 +18,8 @@ export default function AdminHeader({
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
-      const response = await fetch('/api/admin/logout', { method: 'POST' })
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/logout`, { method: 'POST' })
       if (response.ok) {
         localStorage.removeItem('admin_token')
         toast.success('Logged out successfully')
