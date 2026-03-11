@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 interface HeroSectionData {
   title: string
@@ -11,6 +12,15 @@ interface HeroSectionData {
 
 export async function GET() {
   try {
+    // Try to get from cache first
+    const cached = await redis.get(cacheKeys.hero)
+    if (cached) {
+      return NextResponse.json({
+        message: 'Hero section fetched successfully',
+        data: cached,
+      })
+    }
+
     const { data, error } = await supabaseAdmin
       .from('hero_section_home_page')
       .select('*')
@@ -32,16 +42,21 @@ export async function GET() {
       })
     }
 
+    const heroData = {
+      id: data.id,
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      background_image_url: data.background_image,
+      is_active: data.is_active,
+    }
+
+    // Store in cache
+    await redis.setex(cacheKeys.hero, CACHE_TTL, heroData)
+
     return NextResponse.json({
       message: 'Hero section fetched successfully',
-      data: {
-        id: data.id,
-        title: data.title,
-        subtitle: data.subtitle,
-        description: data.description,
-        background_image_url: data.background_image,
-        is_active: data.is_active,
-      },
+      data: heroData,
     })
   } catch (error) {
     console.error('Error fetching hero section:', error)
@@ -113,6 +128,9 @@ export async function POST(request: NextRequest) {
 
       result = data?.[0]
     }
+
+    // Invalidate cache
+    await redis.del(cacheKeys.hero)
 
     return NextResponse.json({
       message: 'Hero section saved successfully',
