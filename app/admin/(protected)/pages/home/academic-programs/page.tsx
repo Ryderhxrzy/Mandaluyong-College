@@ -423,9 +423,15 @@ export default function AcademicProgramsPage() {
                   <div className="!py-0">
                     <ProgramsCarousel 
                       title={sectionTitle} 
-                      slides={programs.map(p => ({
+                      slides={(isEditing && editingId 
+                        ? programs.map(p => p.id === editingId ? { ...p, ...formData, id: p.id } : p)
+                        : isEditing 
+                          ? [...programs, { ...formData, id: Date.now() } as AcademicProgram]
+                          : programs
+                      ).map(p => ({
                         ...p,
-                        title: p.course_name || p.title
+                        title: p.course_name || p.title,
+                        is_active: true // Force active in preview so we can see what we're editing
                       }))} 
                     />
                   </div>
