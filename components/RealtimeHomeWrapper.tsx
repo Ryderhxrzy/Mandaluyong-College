@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import CoreValues from '@/components/CoreValues'
 import EducationCommitment, { CommitmentItem } from '@/components/EducationCommitment'
+import CTA from '@/components/CTA'
 
 interface RealtimeHomeWrapperProps {
   initialHero: any
@@ -16,6 +17,7 @@ interface RealtimeHomeWrapperProps {
   initialOverview: { title: string, items: OverviewItem[] }
   initialPrograms: any[]
   initialCommitment: any
+  initialCTA: any
 }
 
 export default function RealtimeHomeWrapper({
@@ -23,42 +25,15 @@ export default function RealtimeHomeWrapper({
   initialCoreValues,
   initialOverview,
   initialPrograms,
-  initialCommitment
+  initialCommitment,
+  initialCTA
 }: RealtimeHomeWrapperProps) {
   const [hero, setHero] = useState(initialHero)
   const [coreValues, setCoreValues] = useState(initialCoreValues)
   const [overview, setOverview] = useState(initialOverview)
   const [programs, setPrograms] = useState(initialPrograms?.filter((p: any) => p.is_active) || [])
-  const [commitment, setCommitment] = useState(initialCommitment || {
-    title: "Our Commitment to Quality Education and Innovation",
-    subtitle: "At Mandaluyong College of Science and Technology, we strive to provide accessible, high-quality education that empowers our students. Our dedication to advancing instruction and research ensures that we remain at the forefront of academic excellence.",
-    items: [
-      {
-        id: '1',
-        icon: 'ShieldCheck',
-        bgColorLight: '#eff6ff',
-        iconColor: '#2563eb',
-        iconTitle: 'Collaborating for a Brighter Future',
-        value: 'We actively collaborate with stakeholders to enhance educational outcomes.'
-      },
-      {
-        id: '2',
-        icon: 'TrendingUp',
-        bgColorLight: '#f0fdf4',
-        iconColor: '#16a34a',
-        iconTitle: 'Continuous Improvement in Education',
-        value: 'Our focus on continuous improvement drives us to innovate and adapt.'
-      },
-      {
-        id: '3',
-        icon: 'GraduationCap',
-        bgColorLight: '#fffbeb',
-        iconColor: '#d97706',
-        iconTitle: 'Fostering Excellence in Research and Instruction',
-        value: 'We prioritize research initiatives that contribute to societal development.'
-      }
-    ]
-  })
+  const [commitment, setCommitment] = useState(initialCommitment || { title: '', subtitle: '', items: [] })
+  const [cta, setCta] = useState(initialCTA)
 
   useEffect(() => {
     // 1. Subscribe to Hero Section
@@ -177,12 +152,32 @@ export default function RealtimeHomeWrapper({
       )
       .subscribe()
 
+    // 6. Subscribe to CTA Section
+    const ctaChannel = supabase
+      .channel('cta_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'cta_section_home_page' },
+        (payload) => {
+          if (payload.new) {
+            const newData = payload.new as any
+            setCta({
+              title: newData.title,
+              description: newData.description,
+              is_active: newData.is_active
+            })
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(heroChannel)
       supabase.removeChannel(coreValuesChannel)
       supabase.removeChannel(overviewChannel)
       supabase.removeChannel(programsChannel)
       supabase.removeChannel(commitmentChannel)
+      supabase.removeChannel(ctaChannel)
     }
   }, [])
 
@@ -231,20 +226,12 @@ export default function RealtimeHomeWrapper({
         <ProgramsCarousel slides={programs} />
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 py-16">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-900 dark:text-white">Ready to Shape Your Future?</h2>
-            <p className="text-sm sm:text-base md:text-xl mb-8 text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Join a vibrant academic community where leadership, innovation, and excellence thrive. Whether you&apos;re just beginning or advancing your path, we&apos;re here to empower your journey.
-            </p>
-            <Link
-              href="/admissions"
-              className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-[#003a7a] transition"
-            >
-              Apply Now <ArrowRight size={20} />
-            </Link>
-          </div>
-        </section>
+        {cta.is_active && (
+          <CTA 
+            title={cta.title}
+            description={cta.description}
+          />
+        )}
       </div>
     </>
   )
