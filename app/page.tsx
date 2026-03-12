@@ -1,6 +1,46 @@
 import Link from 'next/link'
-import { ArrowRight, Users, Award, BookOpen, Target } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import ProgramsCarousel from '@/components/ProgramsCarousel'
+import InstitutionalOverview, { OverviewItem } from '@/components/InstitutionalOverview'
+
+const overviewItems: OverviewItem[] = [
+  {
+    id: '1',
+    icon: 'Users',
+    value: '420+',
+    label: 'Students Enrolled',
+    color: 'text-primary',
+    bgColorLight: 'bg-blue-100',
+    bgColorDark: 'dark:bg-blue-900/30',
+  },
+  {
+    id: '2',
+    icon: 'Award',
+    value: '20+',
+    label: 'Faculty Members',
+    color: 'text-green-600',
+    bgColorLight: 'bg-green-100',
+    bgColorDark: 'dark:bg-green-900/30',
+  },
+  {
+    id: '3',
+    icon: 'BookOpen',
+    value: '5',
+    label: 'Degree Programs',
+    color: 'text-purple-600',
+    bgColorLight: 'bg-purple-100',
+    bgColorDark: 'dark:bg-purple-900/30',
+  },
+  {
+    id: '4',
+    icon: 'Target',
+    value: '100%',
+    label: 'Commitment to Excellence',
+    color: 'text-amber-500',
+    bgColorLight: 'bg-amber-100',
+    bgColorDark: 'dark:bg-amber-900/30',
+  },
+]
 
 interface HeroData {
   id: string
@@ -121,46 +161,10 @@ export default async function Home() {
 
       {/* Institutional Content */}
       <div className="bg-white dark:bg-gray-900">
-        {/* Institutional Overview */}
-        <section className="py-10 md:py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-          <div className="w-full px-4 sm:px-8 md:px-16 max-w-[1400px] mx-auto">
-            <div className="text-center mb-6 md:mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                Our Commitment to Academic Excellence
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-2 transition">
-                  <Users className="text-primary" size={20} />
-                </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1">420+</div>
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Students Enrolled</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full mb-2 transition">
-                  <Award className="text-green-600" size={20} />
-                </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-1">20+</div>
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Faculty Members</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-2 transition">
-                  <BookOpen className="text-purple-600" size={20} />
-                </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-600 mb-1">5</div>
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Degree Programs</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-2 transition">
-                  <Target className="text-amber-500" size={20} />
-                </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-500 mb-1">100%</div>
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">Commitment to Excellence</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <InstitutionalOverview
+          title="Our Commitment to Academic Excellence"
+          items={overviewItems}
+        />
 
         {/* Core Values */}
         <section
@@ -204,7 +208,7 @@ export default async function Home() {
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
                   <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                   </svg>
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
@@ -219,7 +223,7 @@ export default async function Home() {
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
                   <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                   </svg>
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
@@ -234,7 +238,7 @@ export default async function Home() {
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center transition">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-4">
                   <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                   </svg>
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
