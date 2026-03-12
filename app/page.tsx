@@ -20,6 +20,15 @@ interface CoreValuesData {
   is_active: boolean
 }
 
+interface ProgramData {
+  id: number
+  title: string
+  image: string | null
+  order: number
+  is_active: boolean
+  course_name?: string
+}
+
 async function getHeroData(): Promise<HeroData | null> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
@@ -79,10 +88,27 @@ async function getOverviewData(): Promise<{ title: string, items: OverviewItem[]
   }
 }
 
+async function getAcademicProgramsData(): Promise<ProgramData[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(`${apiUrl}/api/admin/home/academic-programs`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return []
+  } catch (error) {
+    console.error('Error fetching academic programs:', error)
+    return []
+  }
+}
+
 export default async function Home() {
   const heroData = await getHeroData()
   const coreValuesData = await getCoreValuesData()
   const overviewData = await getOverviewData()
+  const academicProgramsData = await getAcademicProgramsData()
 
   const defaultHero: HeroData = {
     id: '1',
@@ -152,6 +178,7 @@ export default async function Home() {
       initialHero={hero}
       initialCoreValues={coreValues}
       initialOverview={overview}
+      initialPrograms={academicProgramsData}
     />
   )
 }
