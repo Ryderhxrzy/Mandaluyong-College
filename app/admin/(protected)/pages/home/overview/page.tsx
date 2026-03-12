@@ -6,6 +6,8 @@ import * as LucideIcons from 'lucide-react'
 import toast from 'react-hot-toast'
 import { HexColorPicker } from 'react-colorful'
 import InstitutionalOverview, { OverviewItem } from '@/components/InstitutionalOverview'
+import ColorPalettePicker, { ColorPalette } from '@/components/admin/ColorPalettePicker'
+import IconPicker from '@/components/admin/IconPicker'
 
 interface DBOverviewItem {
   id: number
@@ -21,67 +23,6 @@ interface DBOverviewItem {
   is_active: boolean
 }
 
-// Helper to get all Lucide icon names safely
-const getLucideIconNames = () => {
-  try {
-    const names = Object.keys(LucideIcons).filter(
-      (name) => 
-        // @ts-ignore
-        typeof LucideIcons[name] === 'function' || 
-        // @ts-ignore
-        (typeof LucideIcons[name] === 'object' && LucideIcons[name].displayName)
-    ).filter(name => name !== 'createLucideIcon' && name[0] === name[0].toUpperCase())
-    
-    return names.length > 0 ? names.sort() : ['Users', 'Award', 'BookOpen', 'Target', 'GraduationCap', 'School', 'Library']
-  } catch (e) {
-    return ['Users', 'Award', 'BookOpen', 'Target', 'GraduationCap', 'School', 'Library']
-  }
-}
-
-const ALL_ICONS = getLucideIconNames()
-
-const COLOR_PALETTES = [
-  // Primary & Professional
-  { name: 'Deep Blue', color: '#003a7a', bgLight: '#ebf2fa', bgDark: '#1e293b' },
-  { name: 'Success Green', color: '#16a34a', bgLight: '#f0fdf4', bgDark: '#14532d' },
-  { name: 'Royal Purple', color: '#9333ea', bgLight: '#faf5ff', bgDark: '#581c87' },
-  { name: 'Amber Glow', color: '#f59e0b', bgLight: '#fffbeb', bgDark: '#78350f' },
-  { name: 'Danger Red', color: '#dc2626', bgLight: '#fef2f2', bgDark: '#7f1d1d' },
-  { name: 'Ocean Cyan', color: '#0891b2', bgLight: '#ecfeff', bgDark: '#164e63' },
-  
-  // Modern & Vibrant
-  { name: 'Rose Pink', color: '#e11d48', bgLight: '#fff1f2', bgDark: '#4c0519' },
-  { name: 'Indigo Night', color: '#4f46e5', bgLight: '#eef2ff', bgDark: '#1e1b4b' },
-  { name: 'Teal Forest', color: '#0d9488', bgLight: '#f0fdfa', bgDark: '#134e4a' },
-  { name: 'Orange Sunset', color: '#ea580c', bgLight: '#fff7ed', bgDark: '#431407' },
-  { name: 'Slate Steel', color: '#475569', bgLight: '#f8fafc', bgDark: '#0f172a' },
-  { name: 'Sky Blue', color: '#0284c7', bgLight: '#f0f9ff', bgDark: '#082f49' },
-  
-  // Soft & Pastel
-  { name: 'Lavender Mist', color: '#a78bfa', bgLight: '#f5f3ff', bgDark: '#2e1065' },
-  { name: 'Emerald Sea', color: '#34d399', bgLight: '#f0fdf4', bgDark: '#064e3b' },
-  { name: 'Golden Sand', color: '#fbbf24', bgLight: '#fffbeb', bgDark: '#451a03' },
-  { name: 'Cherry Blossom', color: '#f472b6', bgLight: '#fdf2f8', bgDark: '#500724' },
-  { name: 'Midnight Violet', color: '#8b5cf6', bgLight: '#f5f3ff', bgDark: '#1e1b4b' },
-  { name: 'Tropical Lime', color: '#a3e635', bgLight: '#f7fee7', bgDark: '#1a2e05' },
-  
-  // Earthy & Deep
-  { name: 'Bordeaux', color: '#be123c', bgLight: '#fff1f2', bgDark: '#4c0519' },
-  { name: 'Forest Deep', color: '#15803d', bgLight: '#f0fdf4', bgDark: '#052e16' },
-  { name: 'Coffee Brown', color: '#92400e', bgLight: '#fff7ed', bgDark: '#451a03' },
-  { name: 'Obsidian', color: '#111827', bgLight: '#f9fafb', bgDark: '#030712' },
-  { name: 'Electric Purple', color: '#a855f7', bgLight: '#f5f3ff', bgDark: '#3b0764' },
-  { name: 'Cobalt', color: '#2563eb', bgLight: '#eff6ff', bgDark: '#1e3a8a' },
-
-  // Sophisticated Neutrals
-  { name: 'Taupe Gray', color: '#71717a', bgLight: '#f4f4f5', bgDark: '#27272a' },
-  { name: 'Olive Drab', color: '#65a30d', bgLight: '#f7fee7', bgDark: '#1a2e05' },
-  { name: 'Deep Navy', color: '#1e3a8a', bgLight: '#eff6ff', bgDark: '#172554' },
-  { name: 'Ruby Wine', color: '#9f1239', bgLight: '#fff1f2', bgDark: '#4c0519' },
-  { name: 'Charcoal', color: '#374151', bgLight: '#f3f4f6', bgDark: '#111827' },
-  { name: 'Sandy Beach', color: '#d97706', bgLight: '#fffbeb', bgDark: '#451a03' }
-]
-
 export default function InstitutionalOverviewAdminPage() {
   const [items, setItems] = useState<DBOverviewItem[]>([])
   const [isEditing, setIsEditing] = useState(false)
@@ -89,11 +30,9 @@ export default function InstitutionalOverviewAdminPage() {
   const [sectionTitle, setSectionTitle] = useState('Our Commitment to Academic Excellence')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [showAllPalettes, setShowAllPalettes] = useState(false)
   
   // Icon Picker State
   const [showIconPicker, setShowIconPicker] = useState(false)
-  const [iconSearch, setIconSearch] = useState('')
 
   useEffect(() => {
     fetchItems()
@@ -118,7 +57,7 @@ export default function InstitutionalOverviewAdminPage() {
     }
   }
 
-  const applyPalette = (palette: typeof COLOR_PALETTES[0]) => {
+  const applyPalette = (palette: ColorPalette) => {
     if (editingItem) {
       setEditingItem({
         ...editingItem,
@@ -226,9 +165,6 @@ export default function InstitutionalOverviewAdminPage() {
     }
   }
 
-  const filteredIcons = ALL_ICONS.filter(name => 
-    name.toLowerCase().includes((iconSearch || '').toLowerCase())
-  ).slice(0, 300)
 
   const mapToOverviewItems = (dbItems: DBOverviewItem[]): OverviewItem[] => {
     return dbItems.map(item => ({
@@ -315,9 +251,9 @@ export default function InstitutionalOverviewAdminPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     {/* @ts-ignore */}
-                    {ALL_ICONS.includes(editingItem.icon || '') ? (
+                    {editingItem.icon && LucideIcons[editingItem.icon] ? (
                       // @ts-ignore
-                      React.createElement(LucideIcons[editingItem.icon] || LucideIcons.Users, { size: 24 })
+                      React.createElement(LucideIcons[editingItem.icon], { size: 24 })
                     ) : <LucideIcons.Users size={24} />}
                   </div>
                   <button 
@@ -330,31 +266,7 @@ export default function InstitutionalOverviewAdminPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quick Color Palettes</label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3 transition-all duration-300">
-                  {(showAllPalettes ? COLOR_PALETTES : COLOR_PALETTES.slice(0, 6)).map((palette) => (
-                    <button
-                      key={palette.name}
-                      onClick={() => applyPalette(palette)}
-                      className="group flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-100 hover:border-primary hover:bg-primary/5 transition cursor-pointer"
-                      title={palette.name}
-                    >
-                      <div className="flex gap-1">
-                        <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: palette.color }}></div>
-                        <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: palette.bgLight }}></div>
-                        <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: palette.bgDark }}></div>
-                      </div>
-                      <span className="text-[10px] font-medium text-gray-500 group-hover:text-primary truncate w-full text-center">{palette.name}</span>
-                    </button>
-                  ))}
-                </div>
-                <button 
-                  onClick={() => setShowAllPalettes(!showAllPalettes)}
-                  className="w-full py-2 flex items-center justify-center gap-1 text-primary text-xs font-semibold border border-dashed border-gray-200 dark:border-gray-700 rounded-lg hover:bg-primary/5 transition cursor-pointer"
-                >
-                  {showAllPalettes ? 'Show Less' : 'Show All Colors'}
-                  {showAllPalettes ? <LucideIcons.ChevronUp size={14} /> : <LucideIcons.ChevronDown size={14} />}
-                </button>
+                <ColorPalettePicker onSelect={applyPalette} />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -508,63 +420,15 @@ export default function InstitutionalOverviewAdminPage() {
       </div>
 
       {/* Icon Picker Modal */}
-      {showIconPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Choose an Icon</h3>
-                <p className="text-xs text-gray-500">Search from {ALL_ICONS.length} available Lucide icons</p>
-              </div>
-              <button 
-                onClick={() => setShowIconPicker(false)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input 
-                  type="text" 
-                  placeholder="Search icons (e.g. university, grad, star)..."
-                  value={iconSearch}
-                  onChange={(e) => setIconSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary outline-none"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
-              {filteredIcons.map(iconName => (
-                <button
-                  key={iconName}
-                  onClick={() => {
-                    setEditingItem({...editingItem!, icon: iconName})
-                    setShowIconPicker(false)
-                  }}
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all cursor-pointer ${
-                    editingItem?.icon === iconName 
-                    ? 'border-primary bg-primary/10 text-primary' 
-                    : 'border-gray-100 dark:border-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {/* @ts-ignore */}
-                  {React.createElement(LucideIcons[iconName], { size: 24 })}
-                  <span className="text-[9px] mt-2 font-medium truncate w-full text-center">{iconName}</span>
-                </button>
-              ))}
-              {filteredIcons.length === 0 && (
-                <div className="col-span-full py-10 text-center text-gray-500">
-                  No icons found matching "{iconSearch}"
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {showIconPicker && editingItem && (
+        <IconPicker
+          selectedIcon={editingItem.icon || ''}
+          onSelect={(iconName) => {
+            setEditingItem({ ...editingItem, icon: iconName })
+            setShowIconPicker(false)
+          }}
+          onClose={() => setShowIconPicker(false)}
+        />
       )}
     </div>
   )
