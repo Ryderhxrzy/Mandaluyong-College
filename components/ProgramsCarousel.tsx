@@ -11,6 +11,7 @@ interface Program {
   image: string | null
   order: number
   is_active: boolean
+  course_name?: string
 }
 
 interface ProgramsCarouselProps {
@@ -54,9 +55,8 @@ const ProgramsCarousel = ({ title: propTitle, slides: propSlides, realtime = fal
       // Filter out slides without images
       const validSlides = propSlides.filter(p => !!p.image)
       
-      // If there's an actual title coming from the database (usually in the first row)
-      // we use that, otherwise fallback to "Our Programs" or propTitle
-      const newTitle = propSlides[0]?.title || propTitle || 'Our Programs'
+      // The section title should prioritize the propTitle passed from the parent
+      const newTitle = propTitle || propSlides[0]?.title || 'Our Programs'
       
       setSlides(validSlides.length > 0 ? validSlides : DEFAULT_SLIDES)
       setSectionTitle(newTitle)
@@ -132,27 +132,27 @@ const ProgramsCarousel = ({ title: propTitle, slides: propSlides, realtime = fal
       {/* Carousel Container */}
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative w-full h-56 sm:h-72 md:h-96 overflow-hidden rounded-lg bg-black">
-          {/* Slides */}
-          {slides.map((slide, index) => (
-            <div
-              key={slide.id || index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              {slide.image && (
-                <Image
-                  src={slide.image}
-                  alt={slide.title || 'Program Image'}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
-              )}
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-black/40"></div>
-            </div>
-          ))}
+                  {/* Slides */}
+                  {slides.map((slide, index) => (
+                    <div
+                      key={slide.id || index}
+                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                        index === currentIndex ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      {slide.image && (
+                        <Image
+                          src={slide.image}
+                          alt={slide.course_name || slide.title || 'Program Image'}
+                          fill
+                          className="object-cover"
+                          priority={index === 0}
+                        />
+                      )}
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-black/40"></div>
+                    </div>
+                  ))}
 
           {/* Navigation Buttons */}
           {slides.length > 1 && (
