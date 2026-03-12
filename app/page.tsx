@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import ProgramsCarousel from '@/components/ProgramsCarousel'
 import InstitutionalOverview, { OverviewItem } from '@/components/InstitutionalOverview'
+import Hero from '@/components/Hero'
 
 const overviewItems: OverviewItem[] = [
   {
@@ -117,47 +118,15 @@ export default async function Home() {
 
   return (
     <>
-      {/* Hero Section with Background Image - Full Screen */}
-      <section
-        className="relative w-full min-h-screen flex items-center text-white overflow-hidden -mt-14 md:-mt-16"
-        style={{
-          backgroundImage: `url(${hero.background_image_url})`,
-          backgroundSize: '100% 100%',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-        }}
-      >
-        {/* Overlay - Darker */}
-        <div className="absolute inset-0 bg-black/70"></div>
-
-        {/* Hero Section Content */}
-        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
-            <span className="text-white block mb-1 sm:mb-2">{hero.title}</span>
-            <span style={{ color: '#50a2ff' }} className="block">
-              {hero.subtitle}
-            </span>
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-10 text-white max-w-4xl leading-relaxed font-medium">
-            {hero.description}
-          </p>
-          <div className="flex flex-row gap-2 sm:gap-4">
-            <Link
-              href="/admissions"
-              className="bg-primary text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-base border border-primary whitespace-nowrap"
-            >
-              Apply Now <ArrowRight size={16} />
-            </Link>
-            <Link
-              href="/academics"
-              className="border border-white text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm md:text-base whitespace-nowrap"
-            >
-              Explore Programs
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <Hero
+        title={hero.title}
+        subtitle={hero.subtitle}
+        description={hero.description}
+        background_image_url={hero.background_image_url}
+        className="min-h-screen -mt-14 md:-mt-16"
+        containerClassName="px-4 sm:px-8 md:px-16 py-12 sm:py-16"
+      />
 
       {/* Institutional Content */}
       <div className="bg-white dark:bg-gray-900">

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowRight, Upload } from 'lucide-react'
+import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import Hero from '@/components/Hero'
 
 interface HeroSection {
   id: string
@@ -244,38 +245,16 @@ export default function HeroSectionPage() {
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Preview
                 </h2>
-                <div
-                  className="relative w-full min-h-80 sm:min-h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
-                  style={{
-                    backgroundImage: formData.background_image_url
-                      ? `url(${formData.background_image_url})`
-                      : undefined,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                >
-                  <div className="absolute inset-0 bg-black/70"></div>
-                  <div className="relative z-10 w-full max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-4 text-white">
-                    <h1 className="text-xs sm:text-sm md:text-base font-extrabold mb-2 leading-tight tracking-tight">
-                      <span className="text-white block mb-1 text-xs sm:text-sm">{formData.title}</span>
-                      <span style={{ color: '#50a2ff' }} className="block text-xs sm:text-sm">
-                        {formData.subtitle}
-                      </span>
-                    </h1>
-                    <p className="text-xs text-white leading-relaxed font-normal max-w-2xl mb-2">
-                      {formData.description}
-                    </p>
-                    <div className="flex flex-row gap-1 sm:gap-2">
-                      <button className="bg-primary text-white px-2 sm:px-3 py-1 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 text-xs border border-primary whitespace-nowrap cursor-pointer">
-                        Apply Now <ArrowRight size={12} />
-                      </button>
-                      <button className="border border-white text-white px-2 sm:px-3 py-1 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs whitespace-nowrap cursor-pointer">
-                        Explore Programs
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <Hero
+                  title={formData.title}
+                  subtitle={formData.subtitle}
+                  description={formData.description}
+                  background_image_url={formData.background_image_url}
+                  className="min-h-80 sm:min-h-96 rounded-lg"
+                  containerClassName="px-2 sm:px-4 py-3 sm:py-4"
+                  asPreview
+                  small
+                />
               </div>
             </div>
 
@@ -303,38 +282,15 @@ export default function HeroSectionPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <div
-                className="relative w-full min-h-96 sm:min-h-screen lg:min-h-96 flex items-center overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-lg"
-                style={{
-                  backgroundImage: formData.background_image_url
-                    ? `url(${formData.background_image_url})`
-                    : undefined,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              >
-                <div className="absolute inset-0 bg-black/70"></div>
-                <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 sm:py-16 text-white">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight tracking-tight">
-                    <span className="text-white block mb-1 sm:mb-2">{formData.title}</span>
-                    <span style={{ color: '#50a2ff' }} className="block">
-                      {formData.subtitle}
-                    </span>
-                  </h1>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-10 text-white max-w-4xl leading-relaxed font-medium">
-                    {formData.description}
-                  </p>
-                  <div className="flex flex-row gap-2 sm:gap-4">
-                    <button className="bg-primary text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-[#003a7a] transition flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm md:text-base border border-primary whitespace-nowrap cursor-pointer">
-                      Apply Now <ArrowRight size={16} />
-                    </button>
-                    <button className="border border-white text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md font-medium hover:bg-white/10 transition flex items-center justify-center text-xs sm:text-sm md:text-base whitespace-nowrap cursor-pointer">
-                      Explore Programs
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <Hero
+                title={formData.title}
+                subtitle={formData.subtitle}
+                description={formData.description}
+                background_image_url={formData.background_image_url}
+                className="min-h-96 sm:min-h-screen lg:min-h-96 rounded-lg"
+                containerClassName="px-4 sm:px-8 md:px-16 py-12 sm:py-16"
+                asPreview
+              />
             </div>
 
             {/* Action Buttons */}
