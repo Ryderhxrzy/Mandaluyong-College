@@ -55,7 +55,7 @@ export default async function Home() {
 
   const defaultHero: HeroData = {
     id: '1',
-    title: 'Shaping Tomorrow&apos;s Innovators at',
+    title: 'Shaping Tomorrow\'s Innovators at',
     subtitle: 'Mandaluyong College of Science and Technology',
     description:
       'Discover a future built on innovation and excellence. Our programs in Information Systems, Mathematics, Communication, Public Administration, and Physical Education equip students with the skills and mindset to thrive in a technology-driven world.',
