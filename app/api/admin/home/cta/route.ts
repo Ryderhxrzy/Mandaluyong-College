@@ -6,9 +6,8 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from('cta_section_home_page')
       .select('*')
-      .order('order', { ascending: true })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
