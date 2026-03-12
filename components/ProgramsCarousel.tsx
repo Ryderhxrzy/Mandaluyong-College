@@ -50,42 +50,22 @@ const ProgramsCarousel = ({ title: propTitle, slides: propSlides, realtime = fal
   ]
 
   useEffect(() => {
-    if (propSlides) {
-      setSlides(propSlides.filter(p => !propSlides.some(s => s.id === p.id && s !== p) || p.is_active))
-      setSectionTitle(propTitle || 'Our Programs')
+    if (propSlides && propSlides.length > 0) {
+      // Filter out slides without images
+      const validSlides = propSlides.filter(p => !!p.image)
+      
+      // If there's an actual title coming from the database (usually in the first row)
+      // we use that, otherwise fallback to "Our Programs" or propTitle
+      const newTitle = propSlides[0]?.title || propTitle || 'Our Programs'
+      
+      setSlides(validSlides.length > 0 ? validSlides : DEFAULT_SLIDES)
+      setSectionTitle(newTitle)
       return
     }
+    
+    // Fallback if no props provided (though it should always have props now)
     fetchPrograms()
-
-    if (realtime) {
-      const channel = supabase
-        .channel('academic_programs_realtime')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'academic_programs_home_page' },
-          async () => {
-            const { data, error } = await supabase
-              .from('academic_programs_home_page')
-              .select('*')
-              .order('order', { ascending: true })
-            
-            if (!error && data) {
-              const activeSlides = data.filter((p: any) => p.is_active && p.image)
-              const slidesToSet = activeSlides.length > 0 ? activeSlides : DEFAULT_SLIDES
-              setSlides(slidesToSet)
-              if (slidesToSet.length > 0 && slidesToSet[0].title) {
-                setSectionTitle(slidesToSet[0].title)
-              }
-            }
-          }
-        )
-        .subscribe()
-
-      return () => {
-        supabase.removeChannel(channel)
-      }
-    }
-  }, [propSlides, propTitle, realtime])
+  }, [propSlides, propTitle])
 
   const fetchPrograms = async () => {
     try {
