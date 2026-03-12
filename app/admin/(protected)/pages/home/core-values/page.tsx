@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import CoreValues from '@/components/CoreValues'
 
 interface CoreValuesSection {
   id: string
@@ -230,27 +231,15 @@ export default function CoreValuesSectionPage() {
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Preview
                 </h2>
-                <div
-                  className="relative w-full py-20 flex items-center justify-center text-center overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700"
-                  style={{
-                    backgroundImage: `url(${formData.background_image_url})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                >
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/65"></div>
-
-                  {/* Content */}
-                  <div className="relative z-10 w-full max-w-md mx-auto px-3 sm:px-4">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 leading-tight text-white" style={{ color: '#50a2ff' }}>
-                      {formData.title}
-                    </h2>
-                    <p className="text-xs sm:text-sm text-white leading-relaxed font-normal">
-                      {formData.description}
-                    </p>
-                  </div>
+                <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <CoreValues
+                    title={formData.title}
+                    description={formData.description}
+                    backgroundImageUrl={formData.background_image_url}
+                    isFixed={false}
+                    className="!py-20"
+                    innerClassName="max-w-md mx-auto px-4"
+                  />
                 </div>
               </div>
             </div>
@@ -279,27 +268,13 @@ export default function CoreValuesSectionPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <div
-                className="relative w-full py-24 md:py-32 flex items-center justify-center text-center overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700"
-                style={{
-                  backgroundImage: `url(${formData.background_image_url})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              >
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/65"></div>
-
-                {/* Content */}
-                <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-16">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight text-white" style={{ color: '#50a2ff' }}>
-                    {formData.title}
-                  </h2>
-                  <p className="text-sm sm:text-base md:text-lg text-white leading-relaxed font-normal max-w-3xl mx-auto">
-                    {formData.description}
-                  </p>
-                </div>
+              <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+                <CoreValues
+                  title={formData.title}
+                  description={formData.description}
+                  backgroundImageUrl={formData.background_image_url}
+                  isFixed={false}
+                />
               </div>
             </div>
 
