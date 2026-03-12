@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
 
 interface Program {
   id: number
@@ -15,9 +16,10 @@ interface Program {
 interface ProgramsCarouselProps {
   title?: string
   slides?: Program[]
+  realtime?: boolean
 }
 
-const ProgramsCarousel = ({ title: propTitle, slides: propSlides }: ProgramsCarouselProps) => {
+const ProgramsCarousel = ({ title: propTitle, slides: propSlides, realtime = false }: ProgramsCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
   const [slides, setSlides] = useState<Program[]>([])
@@ -49,12 +51,41 @@ const ProgramsCarousel = ({ title: propTitle, slides: propSlides }: ProgramsCaro
 
   useEffect(() => {
     if (propSlides) {
-      setSlides(propSlides.filter(p => !propSlides.some(s => s.id === p.id && s !== p) || p.is_active)) // Just use as is for now, filtering logic can be simpler
+      setSlides(propSlides.filter(p => !propSlides.some(s => s.id === p.id && s !== p) || p.is_active))
       setSectionTitle(propTitle || 'Our Programs')
       return
     }
     fetchPrograms()
-  }, [propSlides, propTitle])
+
+    if (realtime) {
+      const channel = supabase
+        .channel('academic_programs_realtime')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'academic_programs_home_page' },
+          async () => {
+            const { data, error } = await supabase
+              .from('academic_programs_home_page')
+              .select('*')
+              .order('order', { ascending: true })
+            
+            if (!error && data) {
+              const activeSlides = data.filter((p: any) => p.is_active && p.image)
+              const slidesToSet = activeSlides.length > 0 ? activeSlides : DEFAULT_SLIDES
+              setSlides(slidesToSet)
+              if (slidesToSet.length > 0 && slidesToSet[0].title) {
+                setSectionTitle(slidesToSet[0].title)
+              }
+            }
+          }
+        )
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [propSlides, propTitle, realtime])
 
   const fetchPrograms = async () => {
     try {
