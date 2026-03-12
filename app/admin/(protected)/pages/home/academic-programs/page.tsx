@@ -430,8 +430,8 @@ export default function AcademicProgramsPage() {
                           : programs
                       ).map(p => ({
                         ...p,
-                        title: p.course_name || p.title,
-                        is_active: true // Force active in preview so we can see what we're editing
+                        title: sectionTitle, // Section heading
+                        is_active: true 
                       }))} 
                     />
                   </div>
@@ -466,7 +466,7 @@ export default function AcademicProgramsPage() {
                               e.stopPropagation()
                               handleEditProgram(program)
                             }}
-                            className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
+                            className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-[#003a7a] transition cursor-pointer"
                           >
                             Edit
                           </button>
@@ -537,7 +537,7 @@ export default function AcademicProgramsPage() {
                   title={sectionTitle} 
                   slides={programs.map(p => ({
                     ...p,
-                    title: p.course_name || p.title
+                    title: sectionTitle
                   }))} 
                 />
               </div>
