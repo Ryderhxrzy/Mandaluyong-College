@@ -10,36 +10,36 @@ const overviewItems: OverviewItem[] = [
     icon: 'Users',
     value: '420+',
     label: 'Students Enrolled',
-    color: 'text-primary',
-    bgColorLight: 'bg-blue-100',
-    bgColorDark: 'dark:bg-blue-900/30',
+    color: '#003a7a',
+    bgColorLight: '#ebf2fa',
+    bgColorDark: '#1e293b',
   },
   {
     id: '2',
     icon: 'Award',
     value: '20+',
     label: 'Faculty Members',
-    color: 'text-green-600',
-    bgColorLight: 'bg-green-100',
-    bgColorDark: 'dark:bg-green-900/30',
+    color: '#16a34a',
+    bgColorLight: '#f0fdf4',
+    bgColorDark: '#14532d',
   },
   {
     id: '3',
     icon: 'BookOpen',
     value: '5',
     label: 'Degree Programs',
-    color: 'text-purple-600',
-    bgColorLight: 'bg-purple-100',
-    bgColorDark: 'dark:bg-purple-900/30',
+    color: '#9333ea',
+    bgColorLight: '#faf5ff',
+    bgColorDark: '#581c87',
   },
   {
     id: '4',
     icon: 'Target',
     value: '100%',
     label: 'Commitment to Excellence',
-    color: 'text-amber-500',
-    bgColorLight: 'bg-amber-100',
-    bgColorDark: 'dark:bg-amber-900/30',
+    color: '#f59e0b',
+    bgColorLight: '#fffbeb',
+    bgColorDark: '#78350f',
   },
 ]
 
@@ -90,9 +90,39 @@ async function getCoreValuesData(): Promise<CoreValuesData | null> {
   }
 }
 
+async function getOverviewData(): Promise<{ title: string, items: OverviewItem[] } | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(
+      `${apiUrl}/api/admin/home/overview`,
+      { cache: 'no-store' }
+    )
+    const data = await response.json()
+    if (data && data.length > 0) {
+      return {
+        title: data[0].title,
+        items: data.filter((item: any) => item.is_active).map((item: any) => ({
+          id: String(item.id),
+          icon: item.icon,
+          value: item.value,
+          label: item.icon_title,
+          color: item.icon_color,
+          bgColorLight: item.icon_bg_color_light,
+          bgColorDark: item.icon_bg_color_dark
+        }))
+      }
+    }
+    return null
+  } catch (error) {
+    console.error('Error fetching overview data:', error)
+    return null
+  }
+}
+
 export default async function Home() {
   const heroData = await getHeroData()
   const coreValuesData = await getCoreValuesData()
+  const overviewData = await getOverviewData()
 
   const defaultHero: HeroData = {
     id: '1',
@@ -115,6 +145,7 @@ export default async function Home() {
 
   const hero = heroData || defaultHero
   const coreValues = coreValuesData || defaultCoreValues
+  const overview = overviewData || { title: "Our Commitment to Academic Excellence", items: overviewItems }
 
   return (
     <>
@@ -131,8 +162,8 @@ export default async function Home() {
       {/* Institutional Content */}
       <div className="bg-white dark:bg-gray-900">
         <InstitutionalOverview
-          title="Our Commitment to Academic Excellence"
-          items={overviewItems}
+          title={overview.title}
+          items={overview.items}
         />
 
         {/* Core Values */}
