@@ -7,21 +7,25 @@ import InstitutionalOverview, { OverviewItem } from '@/components/InstitutionalO
 import ProgramsCarousel from '@/components/ProgramsCarousel'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import CoreValues from '@/components/CoreValues'
 
 interface RealtimeHomeWrapperProps {
   initialHero: any
   initialCoreValues: any
   initialOverview: { title: string, items: OverviewItem[] }
+  initialPrograms: any[]
 }
 
 export default function RealtimeHomeWrapper({
   initialHero,
   initialCoreValues,
-  initialOverview
+  initialOverview,
+  initialPrograms
 }: RealtimeHomeWrapperProps) {
   const [hero, setHero] = useState(initialHero)
   const [coreValues, setCoreValues] = useState(initialCoreValues)
   const [overview, setOverview] = useState(initialOverview)
+  const [programs, setPrograms] = useState(initialPrograms?.filter((p: any) => p.is_active) || [])
 
   useEffect(() => {
     // 1. Subscribe to Hero Section
@@ -98,10 +102,30 @@ export default function RealtimeHomeWrapper({
       )
       .subscribe()
 
+    // 4. Subscribe to Academic Programs
+    const programsChannel = supabase
+      .channel('programs_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'academic_programs_home_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('academic_programs_home_page')
+            .select('*')
+            .order('order', { ascending: true })
+
+          if (!error && data) {
+            setPrograms(data.filter((p: any) => p.is_active))
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(heroChannel)
       supabase.removeChannel(coreValuesChannel)
       supabase.removeChannel(overviewChannel)
+      supabase.removeChannel(programsChannel)
     }
   }, [])
 
@@ -125,29 +149,11 @@ export default function RealtimeHomeWrapper({
         />
 
         {/* Core Values */}
-        <section
-          className="relative w-full py-24 md:py-32 flex items-center justify-center text-center overflow-hidden"
-          style={{
-            backgroundImage: `url(${coreValues.background_image_url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundAttachment: 'fixed',
-          }}
-        >
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/65"></div>
-
-          {/* Content */}
-          <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight" style={{ color: '#50a2ff' }}>
-              {coreValues.title}
-            </h2>
-            <p className="text-sm sm:text-base md:text-lg text-white leading-relaxed font-normal max-w-3xl mx-auto">
-              {coreValues.description}
-            </p>
-          </div>
-        </section>
+        <CoreValues
+          title={coreValues.title}
+          description={coreValues.description}
+          backgroundImageUrl={coreValues.background_image_url}
+        />
 
         {/* Education Commitment remains static as it's not currently dynamic in the same way */}
         <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
@@ -208,7 +214,7 @@ export default function RealtimeHomeWrapper({
         </section>
 
         {/* Programs Section - Carousel */}
-        <ProgramsCarousel realtime={true} />
+        <ProgramsCarousel slides={programs} />
 
         {/* CTA Section */}
         <section className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 py-16">
