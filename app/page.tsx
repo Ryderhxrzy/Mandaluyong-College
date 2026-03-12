@@ -35,6 +35,12 @@ interface CommitmentData {
   items: any[]
 }
 
+interface CTAData {
+  title: string
+  description: string
+  is_active: boolean
+}
+
 async function getHeroData(): Promise<HeroData | null> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
@@ -133,12 +139,29 @@ async function getEducationCommitmentData(): Promise<CommitmentData | null> {
   }
 }
 
+async function getCTAData(): Promise<CTAData | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(`${apiUrl}/api/admin/home/cta`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return null
+  } catch (error) {
+    console.error('Error fetching CTA data:', error)
+    return null
+  }
+}
+
 export default async function Home() {
   const heroData = await getHeroData()
   const coreValuesData = await getCoreValuesData()
   const overviewData = await getOverviewData()
   const academicProgramsData = await getAcademicProgramsData()
   const educationCommitmentData = await getEducationCommitmentData()
+  const ctaData = await getCTAData()
 
   const defaultHero: HeroData = {
     id: '1',
@@ -203,6 +226,12 @@ export default async function Home() {
     ]
   }
 
+  const defaultCTA: CTAData = {
+    title: 'Ready to Shape Your Future?',
+    description: 'Join a vibrant academic community where leadership, innovation, and excellence thrive. Whether you\'re just beginning or advancing your path, we\'re here to empower your journey.',
+    is_active: true,
+  }
+
   return (
     <RealtimeHomeWrapper
       initialHero={hero}
@@ -210,6 +239,7 @@ export default async function Home() {
       initialOverview={overview}
       initialPrograms={academicProgramsData}
       initialCommitment={educationCommitmentData}
+      initialCTA={ctaData || defaultCTA}
     />
   )
 }
