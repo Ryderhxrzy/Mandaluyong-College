@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Upload, Plus, Trash2 } from 'lucide-react'
+import { Upload, Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
-import Image from 'next/image'
+import ProgramsCarousel from '@/components/ProgramsCarousel'
 
 interface AcademicProgram {
   id: number
@@ -44,7 +44,6 @@ const STATIC_DATA: AcademicProgram[] = [
 
 export default function AcademicProgramsPage() {
   const [programs, setPrograms] = useState<AcademicProgram[]>(STATIC_DATA)
-  const [currentIndex, setCurrentIndex] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
   const [sectionTitle, setSectionTitle] = useState('Our Programs')
   const [formData, setFormData] = useState<Partial<AcademicProgram>>({
@@ -284,17 +283,6 @@ export default function AcademicProgramsPage() {
     }
   }
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + programs.length) % programs.length)
-  }
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % programs.length)
-  }
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index)
-  }
 
   if (isLoading) {
     return (
@@ -431,64 +419,16 @@ export default function AcademicProgramsPage() {
                   Preview
                 </h2>
 
-                {/* Section Title */}
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-                  {sectionTitle}
-                </h3>
-
-                {/* Carousel */}
-                <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black mb-4">
-                  {programs.length > 0 && programs[currentIndex] && (
-                    <>
-                      {programs[currentIndex].image ? (
-                        <Image
-                          src={programs[currentIndex].image}
-                          alt={programs[currentIndex].title}
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gray-400 dark:bg-gray-600 flex items-center justify-center">
-                          <span className="text-gray-600 dark:text-gray-400">No image</span>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/40"></div>
-
-                      {/* Navigation Buttons */}
-                      {programs.length > 1 && (
-                        <>
-                          <button
-                            onClick={goToPrevious}
-                            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
-                          >
-                            <ChevronLeft size={18} />
-                          </button>
-                          <button
-                            onClick={goToNext}
-                            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
-                          >
-                            <ChevronRight size={18} />
-                          </button>
-
-                          {/* Dot Indicators */}
-                          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-3">
-                            {programs.map((_, index) => (
-                              <button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className={`w-3 h-3 rounded-full transition cursor-pointer ${
-                                  index === currentIndex
-                                    ? 'bg-white'
-                                    : 'bg-white/50 hover:bg-white/75'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </>
-                  )}
+                <div className="bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm mb-4">
+                  <div className="!py-0">
+                    <ProgramsCarousel 
+                      title={sectionTitle} 
+                      slides={programs.map(p => ({
+                        ...p,
+                        title: p.course_name || p.title
+                      }))} 
+                    />
+                  </div>
                 </div>
 
                 {/* Programs List */}
@@ -499,12 +439,11 @@ export default function AcademicProgramsPage() {
                   {programs.map((program, index) => (
                     <div
                       key={`${program.id}-${index}`}
-                      className={`p-3 rounded-lg border-2 transition cursor-pointer ${
-                        index === currentIndex
+                      className={`p-3 rounded-lg border-2 transition ${
+                        index === 0 // Default to highlighting first one or none
                           ? 'border-primary bg-primary/10 dark:bg-primary/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700'
                       }`}
-                      onClick={() => goToSlide(index)}
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -587,72 +526,14 @@ export default function AcademicProgramsPage() {
                 Preview
               </h2>
 
-              {/* Section Container */}
-              <div className="w-full">
-                {/* Section Title */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-                  <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-                    {sectionTitle}
-                  </h3>
-                </div>
-
-                {/* Carousel Container */}
-                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  {/* Carousel */}
-                  <div className="relative w-full h-96 overflow-hidden rounded-lg bg-black">
-                {programs.length > 0 && programs[currentIndex] && (
-                  <>
-                    {programs[currentIndex].image ? (
-                      <Image
-                        src={programs[currentIndex].image}
-                        alt={programs[currentIndex].title}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gray-400 dark:bg-gray-600 flex items-center justify-center">
-                        <span className="text-gray-600 dark:text-gray-400">No image</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/40"></div>
-
-                    {/* Navigation Buttons */}
-                    {programs.length > 1 && (
-                      <>
-                        <button
-                          onClick={goToPrevious}
-                          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
-                        >
-                          <ChevronLeft size={18} />
-                        </button>
-                        <button
-                          onClick={goToNext}
-                          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 text-white p-1.5 sm:p-2 rounded-full transition cursor-pointer"
-                        >
-                          <ChevronRight size={18} />
-                        </button>
-
-                        {/* Dot Indicators */}
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-3">
-                          {programs.map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={() => goToSlide(index)}
-                              className={`w-3 h-3 rounded-full transition cursor-pointer ${
-                                index === currentIndex
-                                  ? 'bg-white'
-                                  : 'bg-white/50 hover:bg-white/75'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-                  </div>
-                </div>
+              <div className="bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+                <ProgramsCarousel 
+                  title={sectionTitle} 
+                  slides={programs.map(p => ({
+                    ...p,
+                    title: p.course_name || p.title
+                  }))} 
+                />
               </div>
 
               {/* Programs List with Edit/Delete */}
@@ -665,15 +546,14 @@ export default function AcademicProgramsPage() {
                     <div
                       key={`${program.id}-${index}`}
                       className={`p-3 rounded-lg border-2 transition ${
-                        index === currentIndex
+                        index === 0
                           ? 'border-primary bg-primary/10 dark:bg-primary/20'
                           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div
-                          className="flex-1 cursor-pointer"
-                          onClick={() => goToSlide(index)}
+                          className="flex-1"
                         >
                           <span className="font-medium text-gray-900 dark:text-white">
                             {program.course_name || program.title}
