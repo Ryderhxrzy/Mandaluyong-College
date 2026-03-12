@@ -61,7 +61,7 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const isSolid = isScrolled
+  const isSolid = isScrolled || pathname.startsWith('/admin')
 
   return (
     <header
