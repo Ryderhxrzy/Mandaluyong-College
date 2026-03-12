@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         .update({
           title,
           description,
-          background_image_url: background_image_url || null,
+          background_image: background_image_url || null,
           is_active: is_active !== false,
         })
         .eq('id', existingData.id)
@@ -38,10 +38,20 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 400 })
       }
 
+      const savedData = data?.[0]
+        ? {
+            id: data[0].id.toString(),
+            title: data[0].title,
+            description: data[0].description,
+            background_image_url: data[0].background_image,
+            is_active: data[0].is_active,
+          }
+        : null
+
       // Invalidate cache
       await redis.del(cacheKeys.coreValues)
 
-      return NextResponse.json({ data: data?.[0] || null })
+      return NextResponse.json({ data: savedData })
     } else {
       // Create new record
       const { data, error } = await supabaseAdmin
@@ -50,7 +60,7 @@ export async function POST(request: Request) {
           {
             title,
             description,
-            background_image_url: background_image_url || null,
+            background_image: background_image_url || null,
             is_active: is_active !== false,
           },
         ])
@@ -60,10 +70,20 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 400 })
       }
 
+      const savedData = data?.[0]
+        ? {
+            id: data[0].id.toString(),
+            title: data[0].title,
+            description: data[0].description,
+            background_image_url: data[0].background_image,
+            is_active: data[0].is_active,
+          }
+        : null
+
       // Invalidate cache
       await redis.del(cacheKeys.coreValues)
 
-      return NextResponse.json({ data: data?.[0] || null })
+      return NextResponse.json({ data: savedData })
     }
   } catch (error) {
     console.error('Error saving core values:', error)
