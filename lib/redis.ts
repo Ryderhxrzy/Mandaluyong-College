@@ -10,6 +10,7 @@ export const cacheKeys = {
   hero: 'home:hero',
   coreValues: 'home:coreValues',
   academicPrograms: 'home:academicPrograms',
+  overview: 'home:overview',
 }
 
 // Cache TTL in seconds (1 hour)
