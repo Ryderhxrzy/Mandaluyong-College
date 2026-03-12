@@ -1,10 +1,10 @@
 'use client'
 
-import { Users, Award, BookOpen, Target } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 
 export interface OverviewItem {
   id: string
-  icon: 'Users' | 'Award' | 'BookOpen' | 'Target'
+  icon: string
   value: string
   label: string
   color: string
@@ -28,13 +28,9 @@ export default function InstitutionalOverview({
   columns = 4
 }: InstitutionalOverviewProps) {
   const getIcon = (iconName: string, size = 20) => {
-    switch (iconName) {
-      case 'Users': return <Users size={size} />
-      case 'Award': return <Award size={size} />
-      case 'BookOpen': return <BookOpen size={size} />
-      case 'Target': return <Target size={size} />
-      default: return <Users size={size} />
-    }
+    // @ts-ignore
+    const IconComponent = LucideIcons[iconName] || LucideIcons.Users
+    return <IconComponent size={size} />
   }
 
   const gridCols = columns === 1 
@@ -55,12 +51,22 @@ export default function InstitutionalOverview({
           {items.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-xl border border-gray-200 dark:border-gray-700 transition duration-300 text-center hover:shadow-md dark:hover:shadow-primary/5 flex flex-col items-center justify-center min-h-[160px] h-full"
+              className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-xl border border-gray-200 dark:border-gray-700 text-center flex flex-col items-center justify-center min-h-[160px] h-full"
             >
-              <div className={`inline-flex items-center justify-center w-12 h-12 ${item.bgColorLight} ${item.bgColorDark} rounded-full mb-3 shrink-0 transition`}>
-                <span className={item.color}>{getIcon(item.icon, 24)}</span>
+              <div 
+                className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3 shrink-0 transition bg-[var(--bg-light)] dark:bg-[var(--bg-dark)]"
+                style={{ 
+                  // @ts-ignore
+                  '--bg-light': item.bgColorLight,
+                  '--bg-dark': item.bgColorDark,
+                }}
+              >
+                <span style={{ color: item.color }}>{getIcon(item.icon, 24)}</span>
               </div>
-              <div className={`text-2xl sm:text-3xl lg:text-4xl font-bold ${item.color} mb-1 break-words w-full`}>
+              <div 
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 break-words w-full"
+                style={{ color: item.color }}
+              >
                 {item.value}
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold uppercase tracking-wide break-words w-full leading-relaxed">
