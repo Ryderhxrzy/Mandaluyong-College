@@ -29,6 +29,12 @@ interface ProgramData {
   course_name?: string
 }
 
+interface CommitmentData {
+  title: string
+  subtitle: string
+  items: any[]
+}
+
 async function getHeroData(): Promise<HeroData | null> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
@@ -104,11 +110,35 @@ async function getAcademicProgramsData(): Promise<ProgramData[]> {
   }
 }
 
+async function getEducationCommitmentData(): Promise<CommitmentData | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const response = await fetch(`${apiUrl}/api/admin/home/education-commitment`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      const data = await response.json()
+      if (data && data.length > 0) {
+        return {
+          title: data[0].title || "Our Commitment to Quality Education and Innovation",
+          subtitle: data[0].description || "At Mandaluyong College of Science and Technology, we strive to provide accessible, high-quality education that empowers our students. Our dedication to advancing instruction and research ensures that we remain at the forefront of academic excellence.",
+          items: data.filter((item: any) => item.is_active)
+        }
+      }
+    }
+    return null
+  } catch (error) {
+    console.error('Error fetching education commitment:', error)
+    return null
+  }
+}
+
 export default async function Home() {
   const heroData = await getHeroData()
   const coreValuesData = await getCoreValuesData()
   const overviewData = await getOverviewData()
   const academicProgramsData = await getAcademicProgramsData()
+  const educationCommitmentData = await getEducationCommitmentData()
 
   const defaultHero: HeroData = {
     id: '1',
@@ -179,6 +209,7 @@ export default async function Home() {
       initialCoreValues={coreValues}
       initialOverview={overview}
       initialPrograms={academicProgramsData}
+      initialCommitment={educationCommitmentData}
     />
   )
 }
