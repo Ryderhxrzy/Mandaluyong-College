@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle, Calendar, FileText, Users } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Admissions() {
   const [formData, setFormData] = useState({
@@ -41,12 +42,35 @@ export default function Admissions() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6">Admissions</h1>
-          <p className="text-xl text-blue-100">
-            Start your journey at Mandaluyong College today
-          </p>
+      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 md:py-24 -mt-14 md:-mt-16">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-left">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+                Begin Your Future
+              </h1>
+              <p className="text-lg md:text-xl text-blue-100 mb-6 font-medium">
+                At Mandaluyong College of Science and Technology
+              </p>
+              <p className="text-base md:text-lg text-blue-50 leading-relaxed max-w-xl">
+                Unlock your potential with world-class programs tailored for <span className="font-bold text-white">new applicants</span> and <span className="font-bold text-white">transferees</span>. Join a thriving academic community that fosters innovation, leadership, and excellence.
+              </p>
+            </div>
+
+            {/* Right Logo */}
+            <div className="flex justify-center items-center">
+              <div className="relative w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 opacity-90">
+                <Image
+                  src="/mcst-logo.png"
+                  alt="MCST Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
