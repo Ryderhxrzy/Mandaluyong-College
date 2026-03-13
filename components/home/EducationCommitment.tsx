@@ -11,7 +11,6 @@ export interface CommitmentItem {
   iconColor?: string
   bgColorLight?: string
   bgColorDark?: string
-  iconTitle: string
 }
 
 interface EducationCommitmentProps {
@@ -57,7 +56,7 @@ const EducationCommitment = ({ title, subtitle, items, forceSingleColumn }: Educ
                   />
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  {item.iconTitle}
+                  {item.title}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                   {item.description}
