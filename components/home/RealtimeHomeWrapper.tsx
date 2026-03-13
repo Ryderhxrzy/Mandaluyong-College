@@ -1,23 +1,113 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useInView, useAnimation } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import Hero from '@/components/home/Hero'
 import InstitutionalOverview, { OverviewItem } from '@/components/home/InstitutionalOverview'
 import ProgramsCarousel from '@/components/home/ProgramsCarousel'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 import CoreValues from '@/components/home/CoreValues'
 import EducationCommitment, { CommitmentItem } from '@/components/home/EducationCommitment'
 import CTA from '@/components/home/CTA'
 
+// Type definitions
+interface HeroData {
+  id: string
+  title: string
+  subtitle: string
+  description: string
+  background_image_url: string
+  is_active: boolean
+}
+
+interface CoreValuesData {
+  id: string
+  title: string
+  description: string
+  background_image_url: string
+  is_active: boolean
+}
+
+interface ProgramData {
+  id: number
+  title: string
+  image: string | null
+  order: number
+  is_active: boolean
+  course_name?: string
+}
+
+interface CommitmentData {
+  title: string
+  subtitle: string
+  items: CommitmentItemData[]
+}
+
+interface CommitmentItemData {
+  id: number
+  title: string
+  icon: string
+  value: string
+  icon_color: string
+  icon_bg_color_light: string
+  icon_bg_color_dark: string
+  icon_title: string
+  is_active: boolean
+}
+
+interface CTAData {
+  title: string
+  description: string
+  is_active: boolean
+}
+
+interface OverviewData {
+  title: string
+  items: OverviewItem[]
+}
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, delay }
+  })
+}
+
+// Scroll animation wrapper component
+function ScrollSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const controls = useAnimation()
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start('visible')
+    }
+  }, [isInView, controls])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={controls}
+      variants={fadeInUp}
+      custom={delay}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 interface RealtimeHomeWrapperProps {
-  initialHero: any
-  initialCoreValues: any
-  initialOverview: { title: string, items: OverviewItem[] }
-  initialPrograms: any[]
-  initialCommitment: any
-  initialCTA: any
+  initialHero: HeroData
+  initialCoreValues: CoreValuesData
+  initialOverview: OverviewData
+  initialPrograms: ProgramData[]
+  initialCommitment: CommitmentData | null
+  initialCTA: CTAData
 }
 
 export default function RealtimeHomeWrapper({
@@ -28,12 +118,12 @@ export default function RealtimeHomeWrapper({
   initialCommitment,
   initialCTA
 }: RealtimeHomeWrapperProps) {
-  const [hero, setHero] = useState(initialHero)
-  const [coreValues, setCoreValues] = useState(initialCoreValues)
-  const [overview, setOverview] = useState(initialOverview)
-  const [programs, setPrograms] = useState(initialPrograms?.filter((p: any) => p.is_active) || [])
-  const [commitment, setCommitment] = useState(initialCommitment || { title: '', subtitle: '', items: [] })
-  const [cta, setCta] = useState(initialCTA)
+  const [hero, setHero] = useState<HeroData>(initialHero)
+  const [coreValues, setCoreValues] = useState<CoreValuesData>(initialCoreValues)
+  const [overview, setOverview] = useState<OverviewData>(initialOverview)
+  const [programs, setPrograms] = useState<ProgramData[]>(initialPrograms?.filter((p: ProgramData) => p.is_active) || [])
+  const [commitment, setCommitment] = useState<CommitmentData>(initialCommitment || { title: '', subtitle: '', items: [] })
+  const [cta, setCta] = useState<CTAData>(initialCTA)
 
   useEffect(() => {
     // 1. Subscribe to Hero Section
@@ -44,13 +134,13 @@ export default function RealtimeHomeWrapper({
         { event: '*', schema: 'public', table: 'hero_section_home_page' },
         (payload) => {
           if (payload.new) {
-            const newData = payload.new as any
+            const newData = payload.new as HeroData
             setHero({
               id: newData.id,
               title: newData.title,
               subtitle: newData.subtitle,
               description: newData.description,
-              background_image_url: newData.background_image,
+              background_image_url: newData.background_image_url,
               is_active: newData.is_active,
             })
           }
@@ -66,12 +156,12 @@ export default function RealtimeHomeWrapper({
         { event: '*', schema: 'public', table: 'core_values_home_page' },
         (payload) => {
           if (payload.new) {
-            const newData = payload.new as any
+            const newData = payload.new as CoreValuesData
             setCoreValues({
               id: newData.id,
               title: newData.title,
               description: newData.description,
-              background_image_url: newData.background_image,
+              background_image_url: newData.background_image_url,
               is_active: newData.is_active,
             })
           }
@@ -94,8 +184,8 @@ export default function RealtimeHomeWrapper({
 
           if (!error && data && data.length > 0) {
             setOverview({
-              title: data[0].title,
-              items: data.filter((item: any) => item.is_active).map((item: any) => ({
+              title: data[0].title as string,
+              items: data.filter((item: CommitmentItemData) => item.is_active).map((item: CommitmentItemData) => ({
                 id: String(item.id),
                 icon: item.icon,
                 value: item.value,
@@ -123,7 +213,7 @@ export default function RealtimeHomeWrapper({
             .order('order', { ascending: true })
 
           if (!error && data) {
-            setPrograms(data.filter((p: any) => p.is_active))
+            setPrograms(data.filter((p: ProgramData) => p.is_active))
           }
         }
       )
@@ -145,7 +235,7 @@ export default function RealtimeHomeWrapper({
             setCommitment({
               title: data[0].title || "Our Commitment to Quality Education and Innovation",
               subtitle: data[0].description || "At Mandaluyong College of Science and Technology, we strive to provide accessible, high-quality education that empowers our students. Our dedication to advancing instruction and research ensures that we remain at the forefront of academic excellence.",
-              items: data.filter((item: any) => item.is_active)
+              items: data.filter((item: CommitmentItemData) => item.is_active)
             })
           }
         }
@@ -160,7 +250,7 @@ export default function RealtimeHomeWrapper({
         { event: '*', schema: 'public', table: 'cta_section_home_page' },
         (payload) => {
           if (payload.new) {
-            const newData = payload.new as any
+            const newData = payload.new as CTAData
             setCta({
               title: newData.title,
               description: newData.description,
@@ -195,42 +285,52 @@ export default function RealtimeHomeWrapper({
 
       {/* Institutional Content */}
       <div className="bg-white dark:bg-gray-900">
-        <InstitutionalOverview
-          title={overview.title}
-          items={overview.items}
-        />
+        <ScrollSection delay={0.1}>
+          <InstitutionalOverview
+            title={overview.title}
+            items={overview.items}
+          />
+        </ScrollSection>
 
         {/* Core Values */}
-        <CoreValues
-          title={coreValues.title}
-          description={coreValues.description}
-          backgroundImageUrl={coreValues.background_image_url}
-        />
+        <ScrollSection delay={0.2}>
+          <CoreValues
+            title={coreValues.title}
+            description={coreValues.description}
+            backgroundImageUrl={coreValues.background_image_url}
+          />
+        </ScrollSection>
 
         {/* Education Commitment */}
-        <EducationCommitment
-          title={commitment.title}
-          subtitle={commitment.subtitle}
-          items={commitment.items.map((item: any) => ({
-            id: String(item.id),
-            icon: item.icon,
-            description: item.value, // value column is used for item content
-            iconColor: item.icon_color,
-            bgColorLight: item.icon_bg_color_light,
-            bgColorDark: item.icon_bg_color_dark,
-            iconTitle: item.icon_title
-          }))}
-        />
+        <ScrollSection delay={0.2}>
+          <EducationCommitment
+            title={commitment.title}
+            subtitle={commitment.subtitle}
+            items={commitment.items.map((item: CommitmentItemData) => ({
+              id: String(item.id),
+              title: item.icon_title,
+              icon: item.icon,
+              description: item.value,
+              iconColor: item.icon_color,
+              bgColorLight: item.icon_bg_color_light,
+              bgColorDark: item.icon_bg_color_dark
+            }))}
+          />
+        </ScrollSection>
 
         {/* Programs Section - Carousel */}
-        <ProgramsCarousel slides={programs} />
+        <ScrollSection delay={0.2}>
+          <ProgramsCarousel slides={programs} />
+        </ScrollSection>
 
         {/* CTA Section */}
         {cta.is_active && (
-          <CTA
-            title={cta.title}
-            description={cta.description}
-          />
+          <ScrollSection delay={0.2}>
+            <CTA
+              title={cta.title}
+              description={cta.description}
+            />
+          </ScrollSection>
         )}
       </div>
     </>
