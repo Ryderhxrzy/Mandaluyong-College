@@ -26,6 +26,8 @@ import {
   Clipboard,
   Library,
   X,
+  Award,
+  Users,
 } from 'lucide-react'
 
 interface NavItem {
@@ -58,6 +60,15 @@ const navItems: NavItem[] = [
     label: 'About',
     href: '/admin/pages/about',
     icon: Info,
+    children: [
+      { label: 'Banner', href: '/admin/pages/about/banner', icon: Zap },
+      { label: 'Key Statistics', href: '/admin/pages/about/statistics', icon: Building2 },
+      { label: 'Goals & Philosophy', href: '/admin/pages/about/goals', icon: Lightbulb },
+      { label: 'Mission & Vision', href: '/admin/pages/about/mission', icon: Briefcase },
+      { label: 'Core Values', href: '/admin/pages/about/core-values', icon: Heart },
+      { label: 'Why Choose MCST', href: '/admin/pages/about/why-choose', icon: Award },
+      { label: 'Join MCST Community', href: '/admin/pages/about/join-community', icon: Users },
+    ],
   },
   {
     label: 'Academics',
