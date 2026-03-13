@@ -61,17 +61,22 @@ export default function RealtimeAboutWrapper({
   initialWhyChooseSubtitle = 'Discover what sets MCST apart. We are dedicated to providing transformative education, fostering innovation, and building a community committed to public service and excellence.',
   initialWhyChooseCards = [],
 }: RealtimeAboutWrapperProps) {
-  // Loading state
-  const [isLoading, setIsLoading] = useState(true)
-
   // Banner Section State
-  const [bannerBackgroundImage, setBannerBackgroundImage] = useState('')
+  const [bannerBackgroundImage, setBannerBackgroundImage] = useState('/banner.jpg')
 
   // Key Statistics Section State
-  const [keyStatisticsTitle, setKeyStatisticsTitle] = useState('')
-  const [keyStatisticsDescription, setKeyStatisticsDescription] = useState('')
-  const [keyStatisticsItems, setKeyStatisticsItems] = useState<StatItem[]>([])
-  const [keyStatisticsImages, setKeyStatisticsImages] = useState<StatImage[]>([])
+  const [keyStatisticsTitle, setKeyStatisticsTitle] = useState('Discover Our Impact: Key Statistics at Mandaluyong College of Science and Technology')
+  const [keyStatisticsDescription, setKeyStatisticsDescription] = useState('At MCST, we pride ourselves on our vibrant community. Our commitment to excellence is reflected in our impressive statistics.')
+  const [keyStatisticsItems, setKeyStatisticsItems] = useState<StatItem[]>([
+    { id: '1', value: '420+', label: 'Students enrolled in diverse academic programs.' },
+    { id: '2', value: '20+', label: 'Dedicated faculty and staff supporting student success.' },
+  ])
+  const [keyStatisticsImages, setKeyStatisticsImages] = useState<StatImage[]>([
+    { id: '1', image: '/1.webp', altText: 'MCST Campus Life' },
+    { id: '2', image: '/2.webp', altText: 'MCST Students' },
+    { id: '3', image: '/3.webp', altText: 'MCST Community' },
+    { id: '4', image: '/4.webp', altText: 'MCST Excellence' },
+  ])
 
   // Why Choose Section State
   const [whyChooseTitle, setWhyChooseTitle] = useState(initialWhyChooseTitle)
@@ -79,30 +84,30 @@ export default function RealtimeAboutWrapper({
   const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(initialWhyChooseCards)
 
   // Goals Section State
-  const [goalTitle, setGoalTitle] = useState('')
+  const [goalTitle, setGoalTitle] = useState('Goals')
   const [goalItems, setGoalItems] = useState<GoalItem[]>([])
 
   // Philosophy Section State
-  const [philosophyTitle, setPhilosophyTitle] = useState('')
-  const [philosophyDescription, setPhilosophyDescription] = useState('')
-  const [philosophyImage, setPhilosophyImage] = useState('')
-  const [philosophyImageAlt, setPhilosophyImageAlt] = useState('')
+  const [philosophyTitle, setPhilosophyTitle] = useState('Philosophy')
+  const [philosophyDescription, setPhilosophyDescription] = useState('Mandaluyong College of Science and Technology advocates the culture of excellence in science and technology that is anchored on the principles of quality instruction, dynamic research and innovation, continuous improvement, public service, and nationalism.')
+  const [philosophyImage, setPhilosophyImage] = useState('/goals.jpg')
+  const [philosophyImageAlt, setPhilosophyImageAlt] = useState('MCST Goals')
 
   // Mission & Vision Section State
-  const [mission, setMission] = useState('')
-  const [vision, setVision] = useState('')
+  const [mission, setMission] = useState('To cultivate a culture of excellence in Science and Technology pursuing the improvement of the quality of life of every Mandaleño to bring about the city\'s sustainable development and resiliency towards nation building.')
+  const [vision, setVision] = useState('A college of distinction in Science and Technology committed to produce high caliber and employable graduates.')
 
   // Core Values Section State
-  const [coreValuesTitle, setCoreValuesTitle] = useState('')
-  const [coreValuesDescription, setCoreValuesDescription] = useState('')
-  const [coreValuesImage, setCoreValuesImage] = useState('')
-  const [coreValuesCampusTitle, setCoreValuesCampusTitle] = useState('')
-  const [coreValuesCampusDescription, setCoreValuesCampusDescription] = useState('')
+  const [coreValuesTitle, setCoreValuesTitle] = useState('Mandaluyong College of Science and Technology')
+  const [coreValuesDescription, setCoreValuesDescription] = useState('MCST Core Values represent the shared beliefs of the Mandaleño. These beliefs define a genuine Mandaleño through six key ideals:')
+  const [coreValuesImage, setCoreValuesImage] = useState('/mcst-core.jpg')
+  const [coreValuesCampusTitle, setCoreValuesCampusTitle] = useState('Our Campus')
+  const [coreValuesCampusDescription, setCoreValuesCampusDescription] = useState('A center of excellence fostering academic growth, character development, and community service in the heart of Mandaluyong.')
   const [coreValuesItems, setCoreValuesItems] = useState<CoreValueItem[]>([])
 
   // Join Community Section State
-  const [joinCommunityTitle, setJoinCommunityTitle] = useState('')
-  const [joinCommunityDescription, setJoinCommunityDescription] = useState('')
+  const [joinCommunityTitle, setJoinCommunityTitle] = useState('Advancing Science.\nEmpowering Mandaleños.')
+  const [joinCommunityDescription, setJoinCommunityDescription] = useState('At Mandaluyong College of Science and Technology, we champion excellence in instruction, innovation, and inclusive education. Our commitment is rooted in public service, research, and producing globally competitive graduates with a strong sense of nationalism. Be part of a future-forward institution shaping the leaders of tomorrow.')
   const [joinCommunityImages, setJoinCommunityImages] = useState<JoinCommunityImage[]>([])
 
   useEffect(() => {
@@ -318,8 +323,6 @@ export default function RealtimeAboutWrapper({
       }
     } catch (error) {
       console.error('Error fetching initial data:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -720,50 +723,40 @@ export default function RealtimeAboutWrapper({
 
   return (
     <div className="min-h-screen bg-white">
-      <AboutBanner backgroundImageUrl={bannerBackgroundImage || '/banner.jpg'} />
-      {(keyStatisticsTitle || keyStatisticsDescription) && (
-        <AboutKeyStatistics
-          title={keyStatisticsTitle}
-          description={keyStatisticsDescription}
-          items={keyStatisticsItems}
-          images={keyStatisticsImages}
-        />
-      )}
-      {(goalTitle || goalItems.length > 0 || philosophyDescription) && (
-        <AboutGoalsPhilosophy
-          goalTitle={goalTitle}
-          goalItems={goalItems}
-          philosophyTitle={philosophyTitle}
-          philosophyDescription={philosophyDescription}
-          philosophyImage={philosophyImage}
-          philosophyImageAlt={philosophyImageAlt}
-        />
-      )}
-      {(mission || vision) && (
-        <AboutMissionVision mission={mission || ''} vision={vision || ''} />
-      )}
-      {(coreValuesTitle || coreValuesDescription || coreValuesItems.length > 0) && (
-        <AboutCoreValuesSection
-          title={coreValuesTitle}
-          description={coreValuesDescription}
-          image={coreValuesImage || '/mcst-core.jpg'}
-          campusTitle={coreValuesCampusTitle}
-          campusDescription={coreValuesCampusDescription}
-          items={coreValuesItems}
-        />
-      )}
+      <AboutBanner backgroundImageUrl={bannerBackgroundImage} />
+      <AboutKeyStatistics
+        title={keyStatisticsTitle}
+        description={keyStatisticsDescription}
+        items={keyStatisticsItems}
+        images={keyStatisticsImages}
+      />
+      <AboutGoalsPhilosophy
+        goalTitle={goalTitle}
+        goalItems={goalItems}
+        philosophyTitle={philosophyTitle}
+        philosophyDescription={philosophyDescription}
+        philosophyImage={philosophyImage}
+        philosophyImageAlt={philosophyImageAlt}
+      />
+      <AboutMissionVision mission={mission} vision={vision} />
+      <AboutCoreValuesSection
+        title={coreValuesTitle}
+        description={coreValuesDescription}
+        image={coreValuesImage}
+        campusTitle={coreValuesCampusTitle}
+        campusDescription={coreValuesCampusDescription}
+        items={coreValuesItems}
+      />
       <AboutWhyChoose
         title={whyChooseTitle}
         subtitle={whyChooseSubtitle}
         cards={whyChooseCards}
       />
-      {(joinCommunityTitle || joinCommunityDescription || joinCommunityImages.length > 0) && (
-        <AboutJoinCommunity
-          title={joinCommunityTitle}
-          description={joinCommunityDescription}
-          images={joinCommunityImages}
-        />
-      )}
+      <AboutJoinCommunity
+        title={joinCommunityTitle}
+        description={joinCommunityDescription}
+        images={joinCommunityImages}
+      />
     </div>
   )
 }
