@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET() {
   try {
+    // Check Redis cache first
+    const cachedData = await redis.get(cacheKeys.keyStatistics)
+    if (cachedData) {
+      return NextResponse.json(cachedData)
+    }
+
     // Fetch section data
     const { data: sectionData, error: sectionError } = await supabaseAdmin
       .from('key_statistics_about_page')
@@ -15,13 +22,17 @@ export async function GET() {
       return NextResponse.json({ error: sectionError.message }, { status: 400 })
     }
 
+    const defaultData = {
+      title: 'Discover Our Impact: Key Statistics at Mandaluyong College of Science and Technology',
+      description: 'At MCST, we pride ourselves on our vibrant community. Our commitment to excellence is reflected in our impressive statistics.',
+      items: [],
+      images: [],
+    }
+
     if (!sectionData?.id) {
-      return NextResponse.json({
-        title: 'Discover Our Impact: Key Statistics at Mandaluyong College of Science and Technology',
-        description: 'At MCST, we pride ourselves on our vibrant community. Our commitment to excellence is reflected in our impressive statistics.',
-        items: [],
-        images: [],
-      })
+      // Cache default data
+      await redis.setex(cacheKeys.keyStatistics, CACHE_TTL, defaultData)
+      return NextResponse.json(defaultData)
     }
 
     // Fetch items
@@ -38,13 +49,18 @@ export async function GET() {
       .eq('statistics_id', sectionData.id)
       .order('order', { ascending: true })
 
-    return NextResponse.json({
+    const responseData = {
       id: sectionData.id,
       title: sectionData.title,
       description: sectionData.description,
       items: itemsData || [],
       images: imagesData || [],
-    })
+    }
+
+    // Cache the result
+    await redis.setex(cacheKeys.keyStatistics, CACHE_TTL, responseData)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error('Error fetching key statistics:', error)
     return NextResponse.json(
