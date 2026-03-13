@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface MissionVisionData {
   mission: string
@@ -63,6 +64,9 @@ export async function POST(request: NextRequest) {
 
       sectionId = data?.[0]?.id
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.missionVision)
 
     return NextResponse.json({
       message: 'Mission & Vision saved successfully',
