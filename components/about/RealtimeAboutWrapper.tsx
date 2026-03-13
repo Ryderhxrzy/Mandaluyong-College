@@ -32,6 +32,9 @@ export default function RealtimeAboutWrapper({
   initialWhyChooseSubtitle = 'Discover what sets MCST apart. We are dedicated to providing transformative education, fostering innovation, and building a community committed to public service and excellence.',
   initialWhyChooseCards = [],
 }: RealtimeAboutWrapperProps) {
+  // Banner Section State
+  const [bannerBackgroundImage, setBannerBackgroundImage] = useState('/banner.jpg')
+
   // Why Choose Section State
   const [whyChooseTitle, setWhyChooseTitle] = useState(initialWhyChooseTitle)
   const [whyChooseSubtitle, setWhyChooseSubtitle] = useState(initialWhyChooseSubtitle)
@@ -44,7 +47,19 @@ export default function RealtimeAboutWrapper({
 
   const fetchInitialData = async () => {
     try {
-      // Fetch section data
+      // Fetch banner data
+      const { data: bannerData, error: bannerError } = await supabase
+        .from('banner_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!bannerError && bannerData) {
+        setBannerBackgroundImage(bannerData.background_image)
+      }
+
+      // Fetch why choose section data
       const { data: sectionData, error: sectionError } = await supabase
         .from('why_choose_about_page')
         .select('*')
@@ -57,7 +72,7 @@ export default function RealtimeAboutWrapper({
         setWhyChooseSubtitle(sectionData.subtitle)
       }
 
-      // Fetch cards
+      // Fetch why choose cards
       const { data: cardsData, error: cardsError } = await supabase
         .from('why_choose_cards_about_page')
         .select('*')
@@ -76,11 +91,32 @@ export default function RealtimeAboutWrapper({
         setWhyChooseCards(mappedCards)
       }
     } catch (error) {
-      console.error('Error fetching initial why choose data:', error)
+      console.error('Error fetching initial data:', error)
     }
   }
 
   const setupRealtimeSubscriptions = () => {
+    // Subscribe to banner_about_page changes
+    const bannerChannel = supabase
+      .channel('banner_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'banner_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('banner_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setBannerBackgroundImage(data.background_image)
+          }
+        }
+      )
+      .subscribe()
+
     // Subscribe to why_choose_about_page changes
     const whyChooseSectionChannel = supabase
       .channel('why_choose_section_realtime')
@@ -132,6 +168,7 @@ export default function RealtimeAboutWrapper({
       .subscribe()
 
     return () => {
+      supabase.removeChannel(bannerChannel)
       supabase.removeChannel(whyChooseSectionChannel)
       supabase.removeChannel(whyChooseCardsChannel)
     }
@@ -139,7 +176,7 @@ export default function RealtimeAboutWrapper({
 
   return (
     <div className="min-h-screen bg-white">
-      <AboutBanner />
+      <AboutBanner backgroundImageUrl={bannerBackgroundImage} />
       <AboutKeyStatistics />
       <AboutGoalsPhilosophy />
       <AboutMissionVision />
