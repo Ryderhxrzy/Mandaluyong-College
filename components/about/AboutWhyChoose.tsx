@@ -17,6 +17,7 @@ interface AboutWhyChooseProps {
   title?: string
   subtitle?: string
   cards?: WhyChooseCard[]
+  forceTwoColumn?: boolean
 }
 
 const DEFAULT_CARDS: WhyChooseCard[] = [
@@ -58,6 +59,7 @@ export default function AboutWhyChoose({
   title = 'Why Choose Mandaluyong College of Science and Technology?',
   subtitle = 'Discover what sets MCST apart. We are dedicated to providing transformative education, fostering innovation, and building a community committed to public service and excellence.',
   cards = DEFAULT_CARDS,
+  forceTwoColumn = false,
 }: AboutWhyChooseProps) {
   return (
     <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
@@ -72,7 +74,7 @@ export default function AboutWhyChoose({
         </div>
 
         {/* Four Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className={`grid gap-8 mb-12 ${forceTwoColumn ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           {cards.map((card) => {
             const IconComponent = (LucideIcons as any)[card.icon] || LucideIcons.HelpCircle
 
