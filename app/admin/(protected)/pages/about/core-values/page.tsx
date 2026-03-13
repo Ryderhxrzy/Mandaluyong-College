@@ -1,6 +1,6 @@
 'use client'
 
-import AboutCoreValuesSection from '@/components/AboutCoreValuesSection'
+import AboutCoreValuesSection from '@/components/about/AboutCoreValuesSection'
 
 export default function AboutCoreValuesPage() {
   return (
