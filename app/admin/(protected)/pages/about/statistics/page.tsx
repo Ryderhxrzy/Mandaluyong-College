@@ -1,6 +1,6 @@
 'use client'
 
-import AboutKeyStatistics from '@/components/AboutKeyStatistics'
+import AboutKeyStatistics from '@/components/about/AboutKeyStatistics'
 
 export default function AboutStatisticsPage() {
   return (
