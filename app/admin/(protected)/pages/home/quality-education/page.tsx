@@ -5,7 +5,7 @@ import { Plus, Trash2, Search, X } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import toast from 'react-hot-toast'
 import { HexColorPicker } from 'react-colorful'
-import EducationCommitment, { CommitmentItem } from '@/components/EducationCommitment'
+import EducationCommitment, { CommitmentItem } from '@/components/home/EducationCommitment'
 import ColorPalettePicker, { ColorPalette } from '@/components/admin/ColorPalettePicker'
 import IconPicker from '@/components/admin/IconPicker'
 
