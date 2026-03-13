@@ -17,7 +17,7 @@ const CTA = ({
   title,
   description,
   buttonText = 'Apply Now',
-  buttonLink = '/admissions',
+  buttonLink = '/apply',
   className = '',
   asPreview = false
 }: CTAProps) => {
