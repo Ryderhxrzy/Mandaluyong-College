@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import AboutBanner from '@/components/about/AboutBanner'
 import AboutKeyStatistics, { StatItem, StatImage } from '@/components/about/AboutKeyStatistics'
-import AboutGoalsPhilosophy from '@/components/about/AboutGoalsPhilosophy'
+import AboutGoalsPhilosophy, { GoalItem } from '@/components/about/AboutGoalsPhilosophy'
 import AboutMissionVision from '@/components/about/AboutMissionVision'
 import AboutCoreValuesSection from '@/components/about/AboutCoreValuesSection'
 import AboutWhyChoose, { WhyChooseCard } from '@/components/about/AboutWhyChoose'
@@ -33,6 +33,11 @@ interface WhyChooseCardData {
   order: number
 }
 
+interface GoalItemData {
+  id: number
+  description: string
+}
+
 interface RealtimeAboutWrapperProps {
   initialWhyChooseTitle?: string
   initialWhyChooseSubtitle?: string
@@ -57,6 +62,16 @@ export default function RealtimeAboutWrapper({
   const [whyChooseTitle, setWhyChooseTitle] = useState(initialWhyChooseTitle)
   const [whyChooseSubtitle, setWhyChooseSubtitle] = useState(initialWhyChooseSubtitle)
   const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(initialWhyChooseCards)
+
+  // Goals Section State
+  const [goalTitle, setGoalTitle] = useState('Goals')
+  const [goalItems, setGoalItems] = useState<GoalItem[]>([])
+
+  // Philosophy Section State
+  const [philosophyTitle, setPhilosophyTitle] = useState('Philosophy')
+  const [philosophyDescription, setPhilosophyDescription] = useState('')
+  const [philosophyImage, setPhilosophyImage] = useState('')
+  const [philosophyImageAlt, setPhilosophyImageAlt] = useState('')
 
   useEffect(() => {
     fetchInitialData()
@@ -152,6 +167,48 @@ export default function RealtimeAboutWrapper({
           bgColorDark: card.icon_bg_color_dark,
         }))
         setWhyChooseCards(mappedCards)
+      }
+
+      // Fetch goals section data
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('goals_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!goalsError && goalsData) {
+        setGoalTitle(goalsData.title)
+
+        // Fetch goal items
+        const { data: goalItemsData } = await supabase
+          .from('goals_items_about_page')
+          .select('*')
+          .eq('goals_id', goalsData.id)
+          .order('order', { ascending: true })
+
+        if (goalItemsData) {
+          const mappedItems: GoalItem[] = goalItemsData.map((item: GoalItemData) => ({
+            id: String(item.id),
+            description: item.description,
+          }))
+          setGoalItems(mappedItems)
+        }
+      }
+
+      // Fetch philosophy section data
+      const { data: philosophyData, error: philosophyError } = await supabase
+        .from('philosophy_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!philosophyError && philosophyData) {
+        setPhilosophyTitle(philosophyData.title)
+        setPhilosophyDescription(philosophyData.description)
+        setPhilosophyImage(philosophyData.image || '')
+        setPhilosophyImageAlt(philosophyData.image_alt || '')
       }
     } catch (error) {
       console.error('Error fetching initial data:', error)
@@ -320,6 +377,84 @@ export default function RealtimeAboutWrapper({
       )
       .subscribe()
 
+    // Subscribe to goals_about_page changes
+    const goalsChannel = supabase
+      .channel('goals_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'goals_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('goals_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setGoalTitle(data.title)
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to goals_items changes
+    const goalsItemsChannel = supabase
+      .channel('goals_items_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'goals_items_about_page' },
+        async () => {
+          const { data: sectionData } = await supabase
+            .from('goals_about_page')
+            .select('id')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (sectionData?.id) {
+            const { data: itemsData } = await supabase
+              .from('goals_items_about_page')
+              .select('*')
+              .eq('goals_id', sectionData.id)
+              .order('order', { ascending: true })
+
+            if (itemsData) {
+              const mappedItems: GoalItem[] = itemsData.map((item: GoalItemData) => ({
+                id: String(item.id),
+                description: item.description,
+              }))
+              setGoalItems(mappedItems)
+            }
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to philosophy_about_page changes
+    const philosophyChannel = supabase
+      .channel('philosophy_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'philosophy_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('philosophy_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setPhilosophyTitle(data.title)
+            setPhilosophyDescription(data.description)
+            setPhilosophyImage(data.image || '')
+            setPhilosophyImageAlt(data.image_alt || '')
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(bannerChannel)
       supabase.removeChannel(keyStatsChannel)
@@ -327,6 +462,9 @@ export default function RealtimeAboutWrapper({
       supabase.removeChannel(keyStatsImagesChannel)
       supabase.removeChannel(whyChooseSectionChannel)
       supabase.removeChannel(whyChooseCardsChannel)
+      supabase.removeChannel(goalsChannel)
+      supabase.removeChannel(goalsItemsChannel)
+      supabase.removeChannel(philosophyChannel)
     }
   }
 
@@ -339,7 +477,14 @@ export default function RealtimeAboutWrapper({
         items={keyStatisticsItems}
         images={keyStatisticsImages}
       />
-      <AboutGoalsPhilosophy />
+      <AboutGoalsPhilosophy
+        goalTitle={goalTitle}
+        goalItems={goalItems}
+        philosophyTitle={philosophyTitle}
+        philosophyDescription={philosophyDescription}
+        philosophyImage={philosophyImage}
+        philosophyImageAlt={philosophyImageAlt}
+      />
       <AboutMissionVision />
       <AboutCoreValuesSection />
       <AboutWhyChoose
