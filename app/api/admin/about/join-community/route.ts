@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET() {
   try {
+    // Check Redis cache first
+    const cachedData = await redis.get(cacheKeys.joinCommunity)
+    if (cachedData) {
+      return NextResponse.json(cachedData)
+    }
+
     // Fetch section data
     const { data: sectionData, error: sectionError } = await supabaseAdmin
       .from('join_community_about_page')
@@ -15,27 +22,36 @@ export async function GET() {
       return NextResponse.json({ error: sectionError.message }, { status: 400 })
     }
 
+    const defaultData = {
+      title: 'Advancing Science.\nEmpowering Mandaleños.',
+      description: 'At Mandaluyong College of Science and Technology, we champion excellence in instruction, innovation, and inclusive education. Our commitment is rooted in public service, research, and producing globally competitive graduates with a strong sense of nationalism. Be part of a future-forward institution shaping the leaders of tomorrow.',
+      images: [],
+    }
+
     if (!sectionData?.id) {
-      return NextResponse.json({
-        title: 'Advancing Science.\nEmpowering Mandaleños.',
-        description: 'At Mandaluyong College of Science and Technology, we champion excellence in instruction, innovation, and inclusive education. Our commitment is rooted in public service, research, and producing globally competitive graduates with a strong sense of nationalism. Be part of a future-forward institution shaping the leaders of tomorrow.',
-        images: [],
-      })
+      // Cache default data
+      await redis.setex(cacheKeys.joinCommunity, CACHE_TTL, defaultData)
+      return NextResponse.json(defaultData)
     }
 
     // Fetch images
-    const { data: imagesData, error: imagesError } = await supabaseAdmin
+    const { data: imagesData } = await supabaseAdmin
       .from('join_community_images_about_page')
       .select('*')
       .eq('join_community_id', sectionData.id)
       .order('order', { ascending: true })
 
-    return NextResponse.json({
+    const responseData = {
       id: sectionData.id,
       title: sectionData.title,
       description: sectionData.description,
       images: imagesData || [],
-    })
+    }
+
+    // Cache the result
+    await redis.setex(cacheKeys.joinCommunity, CACHE_TTL, responseData)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error('Error fetching join community:', error)
     return NextResponse.json(
