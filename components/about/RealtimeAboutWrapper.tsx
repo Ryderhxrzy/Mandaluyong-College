@@ -6,9 +6,9 @@ import AboutBanner from '@/components/about/AboutBanner'
 import AboutKeyStatistics, { StatItem, StatImage } from '@/components/about/AboutKeyStatistics'
 import AboutGoalsPhilosophy, { GoalItem } from '@/components/about/AboutGoalsPhilosophy'
 import AboutMissionVision from '@/components/about/AboutMissionVision'
-import AboutCoreValuesSection from '@/components/about/AboutCoreValuesSection'
+import AboutCoreValuesSection, { CoreValueItem } from '@/components/about/AboutCoreValuesSection'
 import AboutWhyChoose, { WhyChooseCard } from '@/components/about/AboutWhyChoose'
-import AboutJoinCommunity from '@/components/about/AboutJoinCommunity'
+import AboutJoinCommunity, { JoinCommunityImage } from '@/components/about/AboutJoinCommunity'
 
 interface KeyStatisticsItemData {
   id: number
@@ -38,6 +38,18 @@ interface GoalItemData {
   description: string
 }
 
+interface CoreValueItemData {
+  id: number
+  name: string
+  description: string
+}
+
+interface JoinCommunityImageData {
+  id: number
+  image: string
+  alt_text: string
+}
+
 interface RealtimeAboutWrapperProps {
   initialWhyChooseTitle?: string
   initialWhyChooseSubtitle?: string
@@ -49,12 +61,15 @@ export default function RealtimeAboutWrapper({
   initialWhyChooseSubtitle = 'Discover what sets MCST apart. We are dedicated to providing transformative education, fostering innovation, and building a community committed to public service and excellence.',
   initialWhyChooseCards = [],
 }: RealtimeAboutWrapperProps) {
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true)
+
   // Banner Section State
-  const [bannerBackgroundImage, setBannerBackgroundImage] = useState('/banner.jpg')
+  const [bannerBackgroundImage, setBannerBackgroundImage] = useState('')
 
   // Key Statistics Section State
-  const [keyStatisticsTitle, setKeyStatisticsTitle] = useState('Discover Our Impact: Key Statistics at Mandaluyong College of Science and Technology')
-  const [keyStatisticsDescription, setKeyStatisticsDescription] = useState('At MCST, we pride ourselves on our vibrant community. Our commitment to excellence is reflected in our impressive statistics.')
+  const [keyStatisticsTitle, setKeyStatisticsTitle] = useState('')
+  const [keyStatisticsDescription, setKeyStatisticsDescription] = useState('')
   const [keyStatisticsItems, setKeyStatisticsItems] = useState<StatItem[]>([])
   const [keyStatisticsImages, setKeyStatisticsImages] = useState<StatImage[]>([])
 
@@ -64,18 +79,31 @@ export default function RealtimeAboutWrapper({
   const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(initialWhyChooseCards)
 
   // Goals Section State
-  const [goalTitle, setGoalTitle] = useState('Goals')
+  const [goalTitle, setGoalTitle] = useState('')
   const [goalItems, setGoalItems] = useState<GoalItem[]>([])
 
   // Philosophy Section State
-  const [philosophyTitle, setPhilosophyTitle] = useState('Philosophy')
+  const [philosophyTitle, setPhilosophyTitle] = useState('')
   const [philosophyDescription, setPhilosophyDescription] = useState('')
   const [philosophyImage, setPhilosophyImage] = useState('')
   const [philosophyImageAlt, setPhilosophyImageAlt] = useState('')
 
   // Mission & Vision Section State
-  const [mission, setMission] = useState('To cultivate a culture of excellence in Science and Technology pursuing the improvement of the quality of life of every Mandaleño to bring about the city\'s sustainable development and resiliency towards nation building.')
-  const [vision, setVision] = useState('A college of distinction in Science and Technology committed to produce high caliber and employable graduates.')
+  const [mission, setMission] = useState('')
+  const [vision, setVision] = useState('')
+
+  // Core Values Section State
+  const [coreValuesTitle, setCoreValuesTitle] = useState('')
+  const [coreValuesDescription, setCoreValuesDescription] = useState('')
+  const [coreValuesImage, setCoreValuesImage] = useState('')
+  const [coreValuesCampusTitle, setCoreValuesCampusTitle] = useState('')
+  const [coreValuesCampusDescription, setCoreValuesCampusDescription] = useState('')
+  const [coreValuesItems, setCoreValuesItems] = useState<CoreValueItem[]>([])
+
+  // Join Community Section State
+  const [joinCommunityTitle, setJoinCommunityTitle] = useState('')
+  const [joinCommunityDescription, setJoinCommunityDescription] = useState('')
+  const [joinCommunityImages, setJoinCommunityImages] = useState<JoinCommunityImage[]>([])
 
   useEffect(() => {
     fetchInitialData()
@@ -227,8 +255,71 @@ export default function RealtimeAboutWrapper({
         setMission(missionVisionData.mission)
         setVision(missionVisionData.vision)
       }
+
+      // Fetch core values section data
+      const { data: coreValuesData, error: coreValuesError } = await supabase
+        .from('core_values_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!coreValuesError && coreValuesData) {
+        setCoreValuesTitle(coreValuesData.title)
+        setCoreValuesDescription(coreValuesData.description)
+        setCoreValuesImage(coreValuesData.image || '/mcst-core.jpg')
+        setCoreValuesCampusTitle(coreValuesData.campus_title)
+        setCoreValuesCampusDescription(coreValuesData.campus_description)
+
+        // Fetch core values items
+        const { data: coreValuesItemsData } = await supabase
+          .from('core_values_items_about_page')
+          .select('*')
+          .eq('core_values_id', coreValuesData.id)
+          .order('order', { ascending: true })
+
+        if (coreValuesItemsData) {
+          const mappedItems: CoreValueItem[] = coreValuesItemsData.map((item: CoreValueItemData) => ({
+            id: String(item.id),
+            name: item.name,
+            description: item.description,
+          }))
+          setCoreValuesItems(mappedItems)
+        }
+      }
+
+      // Fetch join community section data
+      const { data: joinCommunityData, error: joinCommunityError } = await supabase
+        .from('join_community_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!joinCommunityError && joinCommunityData) {
+        setJoinCommunityTitle(joinCommunityData.title)
+        setJoinCommunityDescription(joinCommunityData.description)
+
+        // Fetch join community images
+        const { data: joinCommunityImagesData } = await supabase
+          .from('join_community_images_about_page')
+          .select('*')
+          .eq('join_community_id', joinCommunityData.id)
+          .order('order', { ascending: true })
+
+        if (joinCommunityImagesData) {
+          const mappedImages: JoinCommunityImage[] = joinCommunityImagesData.map((img: JoinCommunityImageData) => ({
+            id: String(img.id),
+            image: img.image,
+            altText: img.alt_text,
+          }))
+          setJoinCommunityImages(mappedImages)
+        }
+      }
     } catch (error) {
       console.error('Error fetching initial data:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -494,6 +585,121 @@ export default function RealtimeAboutWrapper({
       )
       .subscribe()
 
+    // Subscribe to core_values_about_page changes
+    const coreValuesChannel = supabase
+      .channel('core_values_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'core_values_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('core_values_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setCoreValuesTitle(data.title)
+            setCoreValuesDescription(data.description)
+            setCoreValuesImage(data.image || '/mcst-core.jpg')
+            setCoreValuesCampusTitle(data.campus_title)
+            setCoreValuesCampusDescription(data.campus_description)
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to core_values_items changes
+    const coreValuesItemsChannel = supabase
+      .channel('core_values_items_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'core_values_items_about_page' },
+        async () => {
+          const { data: sectionData } = await supabase
+            .from('core_values_about_page')
+            .select('id')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (sectionData?.id) {
+            const { data: itemsData } = await supabase
+              .from('core_values_items_about_page')
+              .select('*')
+              .eq('core_values_id', sectionData.id)
+              .order('order', { ascending: true })
+
+            if (itemsData) {
+              const mappedItems: CoreValueItem[] = itemsData.map((item: CoreValueItemData) => ({
+                id: String(item.id),
+                name: item.name,
+                description: item.description,
+              }))
+              setCoreValuesItems(mappedItems)
+            }
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to join_community_about_page changes
+    const joinCommunityChannel = supabase
+      .channel('join_community_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'join_community_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('join_community_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setJoinCommunityTitle(data.title)
+            setJoinCommunityDescription(data.description)
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to join_community_images changes
+    const joinCommunityImagesChannel = supabase
+      .channel('join_community_images_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'join_community_images_about_page' },
+        async () => {
+          const { data: sectionData } = await supabase
+            .from('join_community_about_page')
+            .select('id')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (sectionData?.id) {
+            const { data: imagesData } = await supabase
+              .from('join_community_images_about_page')
+              .select('*')
+              .eq('join_community_id', sectionData.id)
+              .order('order', { ascending: true })
+
+            if (imagesData) {
+              const mappedImages: JoinCommunityImage[] = imagesData.map((img: JoinCommunityImageData) => ({
+                id: String(img.id),
+                image: img.image,
+                altText: img.alt_text,
+              }))
+              setJoinCommunityImages(mappedImages)
+            }
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(bannerChannel)
       supabase.removeChannel(keyStatsChannel)
@@ -505,34 +711,59 @@ export default function RealtimeAboutWrapper({
       supabase.removeChannel(goalsItemsChannel)
       supabase.removeChannel(philosophyChannel)
       supabase.removeChannel(missionVisionChannel)
+      supabase.removeChannel(coreValuesChannel)
+      supabase.removeChannel(coreValuesItemsChannel)
+      supabase.removeChannel(joinCommunityChannel)
+      supabase.removeChannel(joinCommunityImagesChannel)
     }
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <AboutBanner backgroundImageUrl={bannerBackgroundImage} />
-      <AboutKeyStatistics
-        title={keyStatisticsTitle}
-        description={keyStatisticsDescription}
-        items={keyStatisticsItems}
-        images={keyStatisticsImages}
-      />
-      <AboutGoalsPhilosophy
-        goalTitle={goalTitle}
-        goalItems={goalItems}
-        philosophyTitle={philosophyTitle}
-        philosophyDescription={philosophyDescription}
-        philosophyImage={philosophyImage}
-        philosophyImageAlt={philosophyImageAlt}
-      />
-      <AboutMissionVision mission={mission} vision={vision} />
-      <AboutCoreValuesSection />
+      <AboutBanner backgroundImageUrl={bannerBackgroundImage || '/banner.jpg'} />
+      {(keyStatisticsTitle || keyStatisticsDescription) && (
+        <AboutKeyStatistics
+          title={keyStatisticsTitle}
+          description={keyStatisticsDescription}
+          items={keyStatisticsItems}
+          images={keyStatisticsImages}
+        />
+      )}
+      {(goalTitle || goalItems.length > 0 || philosophyDescription) && (
+        <AboutGoalsPhilosophy
+          goalTitle={goalTitle}
+          goalItems={goalItems}
+          philosophyTitle={philosophyTitle}
+          philosophyDescription={philosophyDescription}
+          philosophyImage={philosophyImage}
+          philosophyImageAlt={philosophyImageAlt}
+        />
+      )}
+      {(mission || vision) && (
+        <AboutMissionVision mission={mission || ''} vision={vision || ''} />
+      )}
+      {(coreValuesTitle || coreValuesDescription || coreValuesItems.length > 0) && (
+        <AboutCoreValuesSection
+          title={coreValuesTitle}
+          description={coreValuesDescription}
+          image={coreValuesImage || '/mcst-core.jpg'}
+          campusTitle={coreValuesCampusTitle}
+          campusDescription={coreValuesCampusDescription}
+          items={coreValuesItems}
+        />
+      )}
       <AboutWhyChoose
         title={whyChooseTitle}
         subtitle={whyChooseSubtitle}
         cards={whyChooseCards}
       />
-      <AboutJoinCommunity />
+      {(joinCommunityTitle || joinCommunityDescription || joinCommunityImages.length > 0) && (
+        <AboutJoinCommunity
+          title={joinCommunityTitle}
+          description={joinCommunityDescription}
+          images={joinCommunityImages}
+        />
+      )}
     </div>
   )
 }
