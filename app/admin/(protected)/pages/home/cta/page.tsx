@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import toast from 'react-hot-toast'
-import CTA from '@/components/CTA'
+import CTA from '@/components/home/CTA'
 
 interface CTASection {
   id?: string
