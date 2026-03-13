@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface BannerData {
   background_image: string
@@ -63,6 +64,9 @@ export async function POST(request: NextRequest) {
 
       result = data?.[0]
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.banner)
 
     return NextResponse.json({
       message: 'Banner saved successfully',
