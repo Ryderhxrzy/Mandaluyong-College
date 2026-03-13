@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface JoinCommunityData {
   title: string
@@ -63,6 +64,9 @@ export async function POST(request: NextRequest) {
 
       sectionId = data?.[0]?.id
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.joinCommunity)
 
     return NextResponse.json({
       message: 'Join Community section saved successfully',
