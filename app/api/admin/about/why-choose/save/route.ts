@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface WhyChooseSectionData {
   title: string
@@ -65,6 +66,9 @@ export async function POST(request: NextRequest) {
 
       result = data?.[0]
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.whyChoose)
 
     return NextResponse.json({
       message: 'Why Choose section saved successfully',
