@@ -1,6 +1,6 @@
 'use client'
 
-import AboutWhyChoose from '@/components/AboutWhyChoose'
+import AboutWhyChoose from '@/components/about/AboutWhyChoose'
 
 export default function AboutWhyChoosePage() {
   return (
