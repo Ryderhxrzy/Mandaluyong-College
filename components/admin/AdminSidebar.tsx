@@ -111,6 +111,10 @@ const navItems: NavItem[] = [
     label: 'Contact',
     href: '/admin/pages/contact',
     icon: Mail,
+    children: [
+      { label: 'Hero Section', href: '/admin/pages/contact/hero', icon: Zap },
+      { label: 'Contact Info', href: '/admin/pages/contact/info', icon: Clipboard },
+    ],
   },
 ]
 
