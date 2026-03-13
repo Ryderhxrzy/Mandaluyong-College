@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface CoreValueItem {
   name: string
@@ -64,6 +65,9 @@ export async function POST(request: NextRequest) {
         )
       }
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.coreValuesSection)
 
     return NextResponse.json({
       message: 'Core Values items saved successfully',
