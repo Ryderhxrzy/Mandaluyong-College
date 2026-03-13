@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 interface GoalsData {
   title: string
@@ -61,6 +62,9 @@ export async function POST(request: NextRequest) {
 
       sectionId = data?.[0]?.id
     }
+
+    // Invalidate Redis cache
+    await redis.del(cacheKeys.goals)
 
     return NextResponse.json({
       message: 'Goals section saved successfully',
