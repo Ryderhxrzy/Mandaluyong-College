@@ -54,6 +54,16 @@ const navItems: NavItem[] = [
       { label: 'Education Commitment', href: '/admin/pages/home/quality-education', icon: Lightbulb },
       { label: 'Academic Programs', href: '/admin/pages/home/academic-programs', icon: GraduationCap },
       { label: 'CTA Section', href: '/admin/pages/home/cta', icon: Mail },
+      {
+        label: 'Apply',
+        href: '/admin/pages/home/apply',
+        icon: FileText,
+        children: [
+          { label: 'Hero Section', href: '/admin/pages/home/apply/hero', icon: Zap },
+          { label: 'Requirements', href: '/admin/pages/home/apply/requirements', icon: Clipboard },
+          { label: 'Enrollment Schedule', href: '/admin/pages/home/apply/enrollment-schedule', icon: Building2 },
+        ],
+      },
     ],
   },
   {
@@ -76,7 +86,6 @@ const navItems: NavItem[] = [
     icon: GraduationCap,
     children: [
       { label: 'Programs', href: '/admin/pages/academics/programs', icon: Briefcase },
-      { label: 'Admissions', href: '/admin/pages/academics/admissions', icon: FileText },
     ],
   },
   {
@@ -111,13 +120,31 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Auto-expand dropdowns with active children
+  // Auto-expand dropdowns with active children (including nested)
   useEffect(() => {
     setMounted(true)
     const newExpanded = new Set<string>()
     navItems.forEach((item) => {
-      if (item.children && item.children.some((child) => pathname.startsWith(child.href))) {
-        newExpanded.add(item.href)
+      if (item.children) {
+        // Check if any first-level child is active
+        const hasActiveChild = item.children.some((child) => pathname.startsWith(child.href))
+        if (hasActiveChild) {
+          newExpanded.add(item.href)
+        }
+
+        // Check if any second-level child (grandchild) is active and expand parent
+        const hasActiveGrandchild = item.children.some((child) => {
+          return child.children && child.children.some((grandchild) => pathname.startsWith(grandchild.href))
+        })
+        if (hasActiveGrandchild) {
+          newExpanded.add(item.href)
+          // Also expand the second-level parent
+          item.children.forEach((child) => {
+            if (child.children && child.children.some((grandchild) => pathname.startsWith(grandchild.href))) {
+              newExpanded.add(child.href)
+            }
+          })
+        }
       }
     })
     setExpandedGroups(newExpanded)
@@ -224,18 +251,60 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
                 <ul className="ml-3 mt-1 space-y-1 border-l border-gray-200 dark:border-gray-700 pl-4">
                   {item.children.map((child) => (
                     <li key={child.href}>
-                      <Link
-                        href={child.href}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs transition ${
-                          isActive(child.href)
-                            ? 'bg-primary text-white'
-                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                        onClick={onClose}
-                      >
-                        <child.icon size={14} />
-                        <span>{child.label}</span>
-                      </Link>
+                      {child.children ? (
+                        <button
+                          onClick={() => toggleDropdown(child.href)}
+                          className={`flex items-center justify-between rounded transition px-3 py-1.5 cursor-pointer w-full text-xs font-medium ${
+                            isGroupActive(child.href)
+                              ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <child.icon size={14} />
+                            <span>{child.label}</span>
+                          </div>
+                          <ChevronDown
+                            size={12}
+                            className={`transition-transform text-gray-400 flex-shrink-0 ${
+                              expandedGroups.has(child.href) ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={child.href}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs transition ${
+                            isActive(child.href)
+                              ? 'bg-primary text-white'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={onClose}
+                        >
+                          <child.icon size={14} />
+                          <span>{child.label}</span>
+                        </Link>
+                      )}
+                      {child.children && expandedGroups.has(child.href) && (
+                        <ul className="ml-2 mt-1 space-y-1 border-l border-gray-200 dark:border-gray-700 pl-3">
+                          {child.children.map((grandchild) => (
+                            <li key={grandchild.href}>
+                              <Link
+                                href={grandchild.href}
+                                className={`flex items-center gap-2 px-2 py-1 rounded text-xs transition ${
+                                  isActive(grandchild.href)
+                                    ? 'bg-primary text-white'
+                                    : 'text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                                onClick={onClose}
+                              >
+                                <grandchild.icon size={12} />
+                                <span>{grandchild.label}</span>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
