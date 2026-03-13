@@ -1,9 +1,13 @@
-export default function AboutBanner() {
+interface AboutBannerProps {
+  backgroundImageUrl?: string
+}
+
+export default function AboutBanner({ backgroundImageUrl = '/banner.jpg' }: AboutBannerProps) {
   return (
     <section
       className="banner-section relative w-full h-[240px] sm:h-[300px] md:h-[600px] flex items-center justify-center overflow-hidden -mt-14 md:-mt-16"
       style={{
-        backgroundImage: `url('/banner.jpg')`,
+        backgroundImage: `url('${backgroundImageUrl}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
