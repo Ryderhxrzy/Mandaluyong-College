@@ -7,10 +7,20 @@ export const redis = new Redis({
 
 // Cache key helpers
 export const cacheKeys = {
+  // Home page
   hero: 'home:hero',
   coreValues: 'home:coreValues',
   academicPrograms: 'home:academicPrograms',
   overview: 'home:overview',
+  // About page
+  banner: 'about:banner',
+  keyStatistics: 'about:keyStatistics',
+  whyChoose: 'about:whyChoose',
+  goals: 'about:goals',
+  philosophy: 'about:philosophy',
+  missionVision: 'about:missionVision',
+  coreValuesSection: 'about:coreValuesSection',
+  joinCommunity: 'about:joinCommunity',
 }
 
 // Cache TTL in seconds (1 hour)
