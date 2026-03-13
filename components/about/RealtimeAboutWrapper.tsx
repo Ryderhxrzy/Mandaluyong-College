@@ -73,6 +73,10 @@ export default function RealtimeAboutWrapper({
   const [philosophyImage, setPhilosophyImage] = useState('')
   const [philosophyImageAlt, setPhilosophyImageAlt] = useState('')
 
+  // Mission & Vision Section State
+  const [mission, setMission] = useState('To cultivate a culture of excellence in Science and Technology pursuing the improvement of the quality of life of every Mandaleño to bring about the city\'s sustainable development and resiliency towards nation building.')
+  const [vision, setVision] = useState('A college of distinction in Science and Technology committed to produce high caliber and employable graduates.')
+
   useEffect(() => {
     fetchInitialData()
     setupRealtimeSubscriptions()
@@ -209,6 +213,19 @@ export default function RealtimeAboutWrapper({
         setPhilosophyDescription(philosophyData.description)
         setPhilosophyImage(philosophyData.image || '')
         setPhilosophyImageAlt(philosophyData.image_alt || '')
+      }
+
+      // Fetch mission & vision section data
+      const { data: missionVisionData, error: missionVisionError } = await supabase
+        .from('mission_vision_about_page')
+        .select('*')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+
+      if (!missionVisionError && missionVisionData) {
+        setMission(missionVisionData.mission)
+        setVision(missionVisionData.vision)
       }
     } catch (error) {
       console.error('Error fetching initial data:', error)
@@ -455,6 +472,28 @@ export default function RealtimeAboutWrapper({
       )
       .subscribe()
 
+    // Subscribe to mission_vision_about_page changes
+    const missionVisionChannel = supabase
+      .channel('mission_vision_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'mission_vision_about_page' },
+        async () => {
+          const { data, error } = await supabase
+            .from('mission_vision_about_page')
+            .select('*')
+            .eq('is_active', true)
+            .limit(1)
+            .single()
+
+          if (!error && data) {
+            setMission(data.mission)
+            setVision(data.vision)
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(bannerChannel)
       supabase.removeChannel(keyStatsChannel)
@@ -465,6 +504,7 @@ export default function RealtimeAboutWrapper({
       supabase.removeChannel(goalsChannel)
       supabase.removeChannel(goalsItemsChannel)
       supabase.removeChannel(philosophyChannel)
+      supabase.removeChannel(missionVisionChannel)
     }
   }
 
@@ -485,7 +525,7 @@ export default function RealtimeAboutWrapper({
         philosophyImage={philosophyImage}
         philosophyImageAlt={philosophyImageAlt}
       />
-      <AboutMissionVision />
+      <AboutMissionVision mission={mission} vision={vision} />
       <AboutCoreValuesSection />
       <AboutWhyChoose
         title={whyChooseTitle}
