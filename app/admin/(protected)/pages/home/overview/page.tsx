@@ -5,7 +5,7 @@ import { Plus, Trash2, Search, X } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import toast from 'react-hot-toast'
 import { HexColorPicker } from 'react-colorful'
-import InstitutionalOverview, { OverviewItem } from '@/components/InstitutionalOverview'
+import InstitutionalOverview, { OverviewItem } from '@/components/home/InstitutionalOverview'
 import ColorPalettePicker, { ColorPalette } from '@/components/admin/ColorPalettePicker'
 import IconPicker from '@/components/admin/IconPicker'
 
