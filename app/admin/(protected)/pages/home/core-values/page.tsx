@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
-import CoreValues from '@/components/CoreValues'
+import CoreValues from '@/components/home/CoreValues'
 
 interface CoreValuesSection {
   id: string
