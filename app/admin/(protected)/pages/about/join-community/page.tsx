@@ -1,6 +1,6 @@
 'use client'
 
-import AboutJoinCommunity from '@/components/AboutJoinCommunity'
+import AboutJoinCommunity from '@/components/about/AboutJoinCommunity'
 
 export default function AboutJoinCommunityPage() {
   return (
