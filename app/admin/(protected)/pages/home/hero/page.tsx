@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
-import Hero from '@/components/Hero'
+import Hero from '@/components/home/Hero'
 
 interface HeroSection {
   id: string
