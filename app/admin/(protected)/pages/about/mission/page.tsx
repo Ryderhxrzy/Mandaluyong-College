@@ -1,6 +1,6 @@
 'use client'
 
-import AboutMissionVision from '@/components/AboutMissionVision'
+import AboutMissionVision from '@/components/about/AboutMissionVision'
 
 export default function AboutMissionPage() {
   return (
