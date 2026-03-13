@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Upload, Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
-import ProgramsCarousel from '@/components/ProgramsCarousel'
+import ProgramsCarousel from '@/components/home/ProgramsCarousel'
 
 interface AcademicProgram {
   id: number
