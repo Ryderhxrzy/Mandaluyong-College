@@ -108,7 +108,7 @@ export default function AboutWhyChoose({
         {/* CTA Button */}
         <div className="text-center">
           <Link
-            href="/admissions"
+            href="/apply"
             className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-[#003a7a] transition"
           >
             Apply Now <LucideIcons.ArrowRight size={20} />
