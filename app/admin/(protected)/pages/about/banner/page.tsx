@@ -1,6 +1,6 @@
 'use client'
 
-import AboutBanner from '@/components/AboutBanner'
+import AboutBanner from '@/components/about/AboutBanner'
 
 export default function AboutBannerPage() {
   return (
