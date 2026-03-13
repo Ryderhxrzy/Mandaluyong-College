@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET() {
   try {
+    // Check Redis cache first
+    const cachedData = await redis.get(cacheKeys.whyChoose)
+    if (cachedData) {
+      return NextResponse.json(cachedData)
+    }
+
     const { data, error } = await supabaseAdmin
       .from('why_choose_about_page')
       .select('*')
@@ -14,7 +21,12 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    return NextResponse.json(data || {})
+    const responseData = data || {}
+
+    // Cache the result
+    await redis.setex(cacheKeys.whyChoose, CACHE_TTL, responseData)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error('Error fetching why choose section:', error)
     return NextResponse.json(
