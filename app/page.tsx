@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { OverviewItem } from '@/components/InstitutionalOverview'
-import RealtimeHomeWrapper from '@/components/RealtimeHomeWrapper'
+import { OverviewItem } from '@/components/home/InstitutionalOverview'
+import RealtimeHomeWrapper from '@/components/home/RealtimeHomeWrapper'
 
 interface HeroData {
   id: string
