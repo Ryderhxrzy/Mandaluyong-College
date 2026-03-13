@@ -1,6 +1,6 @@
 'use client'
 
-import AboutGoalsPhilosophy from '@/components/AboutGoalsPhilosophy'
+import AboutGoalsPhilosophy from '@/components/about/AboutGoalsPhilosophy'
 
 export default function AboutGoalsPage() {
   return (
