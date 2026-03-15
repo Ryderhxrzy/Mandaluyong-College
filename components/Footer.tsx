@@ -101,7 +101,7 @@ export default function Footer() {
                 <span className="text-gray-700 dark:text-gray-400">registrarsoffice@mcst.edu.ph</span>
               </li>
               <li className="flex gap-4 pt-2">
-                <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                <a href="https://www.facebook.com/MandaluyongCST" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
                   <Facebook size={18} />
                 </a>
                 <a href="#" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
