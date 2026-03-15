@@ -19,11 +19,12 @@ export async function GET() {
       id: program.id.toString(),
       icon: program.icon,
       title: program.course_title,
+      courseCode: program.course_code,
       description: program.course_description,
       duration: program.course_duration,
       requiredStrand: program.course_required_strand,
       backgroundImage: program.course_image,
-      status: program.status as 'available' | 'coming-soon',
+      status: (program.status === 'active' ? 'available' : 'coming-soon') as 'available' | 'coming-soon',
       isNew: program.status === 'coming-soon',
     }))
 
