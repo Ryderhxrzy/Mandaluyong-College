@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 import { Upload } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { supabase } from '@/lib/supabase'
 import ProgramsBanner from '@/components/academics/programs/ProgramsBanner'
 
 export default function ProgramsHeroPage() {
@@ -32,28 +31,6 @@ export default function ProgramsHeroPage() {
     loadHero()
   }, [])
 
-  // Real-time subscription for hero changes
-  useEffect(() => {
-    const channel = supabase
-      .channel('hero_section_updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'programs_banner' },
-        async () => {
-          console.log('Hero updated, reloading...')
-          const response = await fetch('/api/admin/programs/hero')
-          if (response.ok) {
-            const data = await response.json()
-            if (data.imageUrl) setHeroImageUrl(data.imageUrl)
-          }
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
 
   const handleSaveHero = async () => {
     if (!heroImageUrl.trim()) {
@@ -170,7 +147,7 @@ export default function ProgramsHeroPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <ProgramsBanner />
+              <ProgramsBanner backgroundImageUrl={heroImageUrl} />
             </div>
 
             {/* Action Buttons */}
