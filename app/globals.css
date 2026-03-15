@@ -8,11 +8,43 @@
   --primary-color: #0457a5;
   --accent-blue: #50a2ff;
   --text-primary: #0457a5;
+
+  /* Section Background Colors */
+  --section-bg-light: #ffffff;
+  --section-bg-light-text: #171717;
+  --section-bg-alt: #f9fafb;
+  --section-bg-alt-text: #171717;
+
+  /* Text Colors */
+  --text-heading: #111827;
+  --text-body: #374151;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+
+  /* Border Colors */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+
+  /* Section Background Colors (Dark Mode) */
+  --section-bg-light: #111827;
+  --section-bg-light-text: #f3f4f6;
+  --section-bg-alt: #1f2937;
+  --section-bg-alt-text: #f3f4f6;
+
+  /* Text Colors (Dark Mode) */
+  --text-heading: #f3f4f6;
+  --text-body: #d1d5db;
+  --text-secondary: #9ca3af;
+  --text-light: #6b7280;
+
+  /* Border Colors (Dark Mode) */
+  --border-light: #374151;
+  --border-medium: #4b5563;
 }
 
 @theme inline {

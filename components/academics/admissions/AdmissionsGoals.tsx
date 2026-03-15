@@ -30,9 +30,9 @@ export default function AdmissionsGoals() {
   ]
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
+    <section className="py-16 md:py-24" style={{ backgroundColor: 'var(--section-bg-alt)' }}>
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-gray-900 dark:text-white text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center" style={{ color: 'var(--text-heading)' }}>
           Goals of Mandaluyong College of Science and Technology
         </h2>
 
@@ -42,10 +42,15 @@ export default function AdmissionsGoals() {
             return (
               <div
                 key={goal.id}
-                className="flex items-start gap-6 p-6 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                className="flex items-start gap-6 p-6 rounded-lg"
+                style={{
+                  backgroundColor: 'var(--section-bg-light)',
+                  borderColor: 'var(--border-light)',
+                  borderWidth: '1px',
+                }}
               >
-                <Icon className="text-primary flex-shrink-0 mt-1" size={28} />
-                <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
+                <Icon className="flex-shrink-0 mt-1" size={28} style={{ color: 'var(--primary-color)' }} />
+                <p className="text-base md:text-lg" style={{ color: 'var(--text-body)' }}>
                   {goal.text}
                 </p>
               </div>
