@@ -70,13 +70,13 @@ export default function RequiredStrand({ items = DEFAULT_ITEMS }: RequiredStrand
   }
 
   return (
-    <section className="py-16 md:py-24" style={{ backgroundColor: 'var(--section-bg-alt)' }}>
+    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center" style={{ color: 'var(--text-heading)' }}>
+        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-gray-900 dark:text-white text-center">
           Required Strand per Program
         </h2>
 
-        <div className="rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--section-bg-light)', borderColor: 'var(--border-light)', borderWidth: '1px' }}>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -111,8 +111,8 @@ export default function RequiredStrand({ items = DEFAULT_ITEMS }: RequiredStrand
           </div>
 
           {/* Pagination */}
-          <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: `1px solid var(--border-light)` }}>
-            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing {paginatedData.length > 0 ? currentPage * itemsPerPage + 1 : 0} to{' '}
               {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of {filteredData.length} entries
             </div>
