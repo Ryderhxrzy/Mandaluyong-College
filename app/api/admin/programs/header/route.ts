@@ -3,15 +3,16 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET() {
   try {
-    // Fetch section data
+    // Fetch section data - try to get active first, then any record
     const { data: sectionData, error: sectionError } = await supabaseAdmin
       .from('programs_header')
       .select('*')
-      .eq('is_active', true)
+      .order('updated_at', { ascending: false })
       .limit(1)
       .single()
 
     if (sectionError && sectionError.code !== 'PGRST116') {
+      console.error('Supabase error:', sectionError)
       return NextResponse.json({ error: sectionError.message }, { status: 400 })
     }
 
@@ -22,15 +23,17 @@ export async function GET() {
     }
 
     if (!sectionData?.id) {
+      console.log('No header data found in database, returning defaults')
       return NextResponse.json(defaultData)
     }
 
     const responseData = {
-      id: sectionData.id,
-      title: sectionData.title,
-      subtitle: sectionData.sub_title,
+      id: sectionData.id.toString(),
+      title: sectionData.title || 'Our Featured Programs',
+      subtitle: sectionData.sub_title || 'Discover academic paths tailored for your success.',
     }
 
+    console.log('Header fetched from database:', responseData)
     return NextResponse.json(responseData)
   } catch (error) {
     console.error('Error fetching programs header:', error)

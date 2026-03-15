@@ -96,15 +96,23 @@ export default function RealtimeProgramWrapper({
     subtitle: 'Discover academic paths tailored for your success.',
   })
 
-  const [cards, setCards] = useState<FeaturedProgramCard[]>(DEFAULT_CARDS)
+  const [cards, setCards] = useState<FeaturedProgramCard[]>([])
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   const fetchHeader = useCallback(async () => {
     try {
+      console.log('Fetching header from /api/admin/programs/header...')
       const response = await fetch('/api/admin/programs/header')
+      console.log('Header response status:', response.status)
+
       if (response.ok) {
         const header = await response.json()
-        console.log('Fetched header data:', header)
+        console.log('Header data received:', header)
         setHeaderData(header)
+      } else {
+        console.error('Failed to fetch header:', response.status)
+        const errorData = await response.json().catch(() => null)
+        console.error('Error details:', errorData)
       }
     } catch (error) {
       console.error('Error fetching header:', error)
@@ -116,56 +124,90 @@ export default function RealtimeProgramWrapper({
       const response = await fetch('/api/admin/programs/featured')
       if (response.ok) {
         const fetchedCards = await response.json()
-        console.log('Fetched cards:', fetchedCards)
-        setCards(fetchedCards)
+        console.log('Fetched cards from API:', fetchedCards)
+        if (Array.isArray(fetchedCards) && fetchedCards.length > 0) {
+          setCards(fetchedCards)
+        } else {
+          // Show defaults only if no data
+          setCards(DEFAULT_CARDS)
+        }
+      } else {
+        console.error('Failed to fetch cards:', response.status)
+        setCards(DEFAULT_CARDS)
       }
     } catch (error) {
       console.error('Error fetching cards:', error)
+      setCards(DEFAULT_CARDS)
     }
   }, [])
 
-  const fetchData = useCallback(async () => {
-    fetchHeader()
-    fetchCards()
-  }, [fetchHeader, fetchCards])
-
   const setupRealtimeSubscriptions = useCallback(() => {
+    console.log('Setting up real-time subscriptions...')
+
     // Subscribe to header changes
     const headerChannel = supabase
-      .channel('programs_header_realtime')
+      .channel('programs_header_realtime', { realtime: { self: true } })
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'programs_header' },
-        () => {
-          console.log('Header change detected - refetching...')
-          fetchHeader()
+        async (payload) => {
+          console.log('Header change detected:', payload)
+          console.log('Refetching header...')
+          await fetchHeader()
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('Header subscription status:', status)
+      })
 
     // Subscribe to featured programs changes
     const programsChannel = supabase
-      .channel('programs_featured_realtime')
+      .channel('programs_featured_realtime', { realtime: { self: true } })
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'programs_featured_programs' },
-        () => {
-          console.log('Programs change detected - refetching...')
-          fetchCards()
+        async (payload) => {
+          console.log('Programs change detected:', payload)
+          console.log('Refetching programs...')
+          await fetchCards()
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('Programs subscription status:', status)
+      })
 
     return () => {
+      console.log('Cleaning up subscriptions...')
       supabase.removeChannel(headerChannel)
       supabase.removeChannel(programsChannel)
     }
   }, [fetchHeader, fetchCards])
 
   useEffect(() => {
-    fetchData()
-    return setupRealtimeSubscriptions()
-  }, [fetchData, setupRealtimeSubscriptions])
+    let mounted = true
+
+    const initializeData = async () => {
+      if (mounted) {
+        await fetchCards()
+        await fetchHeader()
+        if (mounted) {
+          setIsInitialLoad(false)
+        }
+      }
+    }
+
+    initializeData()
+    return () => {
+      mounted = false
+    }
+  }, [fetchCards, fetchHeader])
+
+  useEffect(() => {
+    // Set up real-time subscriptions after initial load
+    if (!isInitialLoad) {
+      return setupRealtimeSubscriptions()
+    }
+  }, [isInitialLoad, setupRealtimeSubscriptions])
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">

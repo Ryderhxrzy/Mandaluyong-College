@@ -8,6 +8,7 @@ export interface FeaturedProgramCard {
   id: string
   icon: string
   title: string
+  courseCode?: string
   description: string
   duration: string
   requiredStrand: string
@@ -146,6 +147,7 @@ export default function FeaturedPrograms({
                     <div className="flex-1 flex flex-col justify-center items-start max-w-sm">
                       <h3 className="text-2xl md:text-2xl font-bold mb-2">
                         {card.title}
+                        {card.courseCode && <span className="text-lg font-semibold ml-2">({card.courseCode})</span>}
                       </h3>
                       <p className="text-sm text-gray-700 dark:text-gray-200 mb-4 leading-relaxed">
                         {card.description}
@@ -205,6 +207,7 @@ export default function FeaturedPrograms({
                   <div className="flex-1 flex flex-col justify-center items-start max-w-sm">
                     <h3 className="text-2xl md:text-2xl font-bold mb-2">
                       {card.title}
+                      {card.courseCode && <span className="text-lg font-semibold ml-2">({card.courseCode})</span>}
                     </h3>
                     <p className="text-sm text-gray-200 mb-4 leading-relaxed">
                       {card.description}
@@ -268,6 +271,7 @@ export default function FeaturedPrograms({
                   <div className="flex-1 flex flex-col justify-center items-start max-w-sm">
                     <h3 className="text-2xl md:text-2xl font-bold mb-2">
                       {card.title}
+                      {card.courseCode && <span className="text-lg font-semibold ml-2">({card.courseCode})</span>}
                     </h3>
                     <p className="text-sm text-gray-700 dark:text-gray-200 mb-4 leading-relaxed">
                       {card.description}

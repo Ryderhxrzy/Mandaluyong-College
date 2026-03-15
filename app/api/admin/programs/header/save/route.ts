@@ -1,18 +1,19 @@
+import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { title, subtitle } = await req.json()
 
     if (!title || !subtitle) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Title and subtitle are required' },
         { status: 400 }
       )
     }
 
     // Check if header record exists
-    const { data: existing } = await supabaseAdmin
+    const { data: existing, error: checkError } = await supabaseAdmin
       .from('programs_header')
       .select('id')
       .eq('is_active', true)
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
 
       if (error) throw error
       console.log('Header updated:', data)
-      return Response.json({ message: 'Header updated successfully!', data })
+      return NextResponse.json({ message: 'Header updated successfully!', data })
     } else {
       // Insert new record
       const { data, error } = await supabaseAdmin
@@ -50,11 +51,11 @@ export async function POST(req: Request) {
 
       if (error) throw error
       console.log('Header created:', data)
-      return Response.json({ message: 'Header created successfully!', data })
+      return NextResponse.json({ message: 'Header created successfully!', data })
     }
   } catch (error) {
     console.error('Error saving programs header:', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to save header'
-    return Response.json({ error: errorMessage }, { status: 500 })
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
