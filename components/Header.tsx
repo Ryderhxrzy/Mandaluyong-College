@@ -46,7 +46,7 @@ export default function Header() {
     { label: 'Academics', href: '/academics', hasDropdown: true, items: [{ label: 'Programs', href: '/programs' }, { label: 'Admissions', href: '/admissions' }] },
     { label: 'News', href: '/news' },
     { label: 'FAQs', href: '/faqs' },
-    { label: 'Resources', href: '/resources', hasDropdown: true, items: [{ label: 'Registrar\'s Office', href: '/resources' }, { label: 'Learning Resource Center', href: '/resources' }], position: 'right' },
+    { label: 'Resources', href: '/resources', hasDropdown: true, items: [{ label: 'Registrar\'s Office', href: 'https://sites.google.com/view/mcst-registrar/home' }, { label: 'Learning Resource Center', href: 'https://sites.google.com/view/mandaluyong-college-of-science/home' }], position: 'right' },
   ]
 
   useEffect(() => {
