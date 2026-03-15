@@ -43,7 +43,7 @@ export default function Header() {
   const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
-    { label: 'Academics', href: '/academics', hasDropdown: true, items: [{ label: 'Programs', href: '/academics' }, { label: 'Admissions', href: '/admissions' }] },
+    { label: 'Academics', href: '/academics', hasDropdown: true, items: [{ label: 'Programs', href: '/programs' }, { label: 'Admissions', href: '/admissions' }] },
     { label: 'News', href: '/news' },
     { label: 'FAQs', href: '/faqs' },
     { label: 'Resources', href: '/resources', hasDropdown: true, items: [{ label: 'Registrar\'s Office', href: '/resources' }, { label: 'Learning Resource Center', href: '/resources' }], position: 'right' },
@@ -94,6 +94,8 @@ export default function Header() {
         <div className="hidden lg:flex gap-6 lg:gap-8 items-center">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+            const isDropdownActive = link.hasDropdown && link.items?.some(item => pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)))
+            const linkIsActive = isActive || isDropdownActive
             return (
               <div
                 key={link.href}
@@ -103,7 +105,7 @@ export default function Header() {
               >
                 <Link
                   href={link.href}
-                  className={`font-semibold text-sm lg:text-base flex items-center gap-1 transition-colors duration-300 ${isActive
+                  className={`font-semibold text-sm lg:text-base flex items-center gap-1 transition-colors duration-300 ${linkIsActive
                     ? 'text-[#50a2ff]'
                     : isSolid
                       ? 'text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-primary'
@@ -119,24 +121,29 @@ export default function Header() {
                   <div className={`absolute mt-0 w-56 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform origin-top group-hover:translate-y-0 translate-y-[-10px] ${
                     (link as any).position === 'right' ? 'right-0' : 'left-0'
                   }`}>
-                    {link.items.map((item, index) => (
-                      <Link
-                        key={index}
-                        href={item.href}
-                        className={`flex items-center justify-between px-4 py-3 text-sm font-medium transition-colors duration-200 ${
-                          index === 0 ? 'rounded-t-lg' : ''
-                        } ${
-                          index === link.items!.length - 1 ? 'rounded-b-lg' : ''
-                        } ${
-                          isSolid
-                            ? 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
-                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        {item.label}
-                        {(link as any).position === 'right' && <ExternalLink size={14} />}
-                      </Link>
-                    ))}
+                    {link.items.map((item, index) => {
+                      const isItemActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                      return (
+                        <Link
+                          key={index}
+                          href={item.href}
+                          className={`flex items-center justify-between px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                            index === 0 ? 'rounded-t-lg' : ''
+                          } ${
+                            index === link.items!.length - 1 ? 'rounded-b-lg' : ''
+                          } ${
+                            isItemActive
+                              ? 'text-[#50a2ff] bg-blue-50 dark:bg-slate-700/50'
+                              : isSolid
+                                ? 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
+                                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700'
+                          }`}
+                        >
+                          {item.label}
+                          {(link as any).position === 'right' && <ExternalLink size={14} />}
+                        </Link>
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -176,11 +183,13 @@ export default function Header() {
           <div className="w-full px-4 sm:px-6 md:px-16 py-3 flex flex-col gap-4">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+              const isDropdownActive = link.hasDropdown && link.items?.some(item => pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)))
+              const linkIsActive = isActive || isDropdownActive
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-semibold transition-colors duration-300 flex justify-between items-center ${isActive
+                  className={`font-semibold transition-colors duration-300 flex justify-between items-center ${linkIsActive
                     ? 'text-[#50a2ff]'
                     : isSolid
                       ? 'text-gray-700 hover:text-primary dark:text-gray-300 dark:hover:text-primary'
