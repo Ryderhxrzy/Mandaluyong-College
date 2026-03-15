@@ -122,7 +122,7 @@ export default function DocumentaryRequirement() {
                   <span className="font-bold">1. Fill out the pre-registration via Google Form:</span>
                 </p>
                 <p className="text-blue-600 dark:text-blue-400 underline ml-4">
-                  <a href="#" target="_blank" rel="noopener noreferrer">Pre-Register Form</a>
+                  <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1wetVpXWkg_4nUZQeWjlHGJ2zDxdXGrNcmJrGj0EXmUtadw/viewform" target="_blank" rel="noopener noreferrer">Pre-Register Form</a>
                 </p>
                 <p className="text-red-600 dark:text-red-400 text-sm ml-4 mt-1">
                   Note: Failure to take the pre-registration form means invalid application.
