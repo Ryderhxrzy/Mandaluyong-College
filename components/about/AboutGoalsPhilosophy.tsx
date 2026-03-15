@@ -49,7 +49,7 @@ export default function AboutGoalsPhilosophy({
   previewMode = false,
 }: AboutGoalsPhilosophyProps) {
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         {/* Desktop Layout: Content Left, Image Right */}
         <div className={`${previewMode ? 'hidden' : 'hidden md:grid'} md:grid-cols-2 gap-12 items-center`}>
@@ -57,12 +57,12 @@ export default function AboutGoalsPhilosophy({
           <div>
             {/* Goals */}
             <div className="mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">{goalTitle}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">{goalTitle}</h2>
               <ul className="space-y-4">
                 {goalItems.map((item) => (
                   <li key={item.id} className="flex gap-3 items-center">
                     <CheckCircle className="text-primary flex-shrink-0" size={16} />
-                    <span className="text-gray-700">{item.description}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{item.description}</span>
                   </li>
                 ))}
               </ul>
@@ -70,19 +70,19 @@ export default function AboutGoalsPhilosophy({
 
             {/* Philosophy */}
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">{philosophyTitle}</h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">{philosophyTitle}</h2>
+              <p className="text-lg text-gray-700 dark:text-gray-400 leading-relaxed">
                 {philosophyDescription}
               </p>
             </div>
           </div>
 
           {/* Right Image */}
-          <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-4 border-gray-200 shadow-lg">
+          <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-4 border-gray-200 dark:border-gray-600 shadow-lg">
             {philosophyImage ? (
               <Image src={philosophyImage} alt={philosophyImageAlt} fill className="object-cover" />
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+              <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
                 No image
               </div>
             )}
@@ -93,12 +93,12 @@ export default function AboutGoalsPhilosophy({
         <div className={`${previewMode ? 'block' : 'md:hidden'} space-y-8`}>
           {/* Goals */}
           <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">{goalTitle}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">{goalTitle}</h2>
             <ul className="space-y-4">
               {goalItems.map((item) => (
                 <li key={item.id} className="flex gap-3 items-center">
                   <CheckCircle className="text-primary flex-shrink-0" size={16} />
-                  <span className="text-gray-700">{item.description}</span>
+                  <span className="text-gray-700 dark:text-gray-300">{item.description}</span>
                 </li>
               ))}
             </ul>
@@ -106,18 +106,18 @@ export default function AboutGoalsPhilosophy({
 
           {/* Philosophy */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">{philosophyTitle}</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">{philosophyTitle}</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-400 leading-relaxed">
               {philosophyDescription}
             </p>
           </div>
 
           {/* Image at Bottom */}
-          <div className="relative w-full h-64 rounded-2xl overflow-hidden border-4 border-gray-200 shadow-lg">
+          <div className="relative w-full h-64 rounded-2xl overflow-hidden border-4 border-gray-200 dark:border-gray-600 shadow-lg">
             {philosophyImage ? (
               <Image src={philosophyImage} alt={philosophyImageAlt} fill className="object-cover" />
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+              <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
                 No image
               </div>
             )}
