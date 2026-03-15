@@ -122,11 +122,11 @@ export default function Footer() {
         <div className="flex flex-col justify-center items-center gap-4">
           <p className="text-sm text-gray-600 dark:text-gray-500">&copy; 2026 MCST. All rights reserved.</p>
           <div className="flex flex-col sm:flex-row justify-center items-center text-sm gap-2">
-            <Link href="#" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition">
+            <Link href="/legal/privacy-policy" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition">
               Privacy Policy
             </Link>
             <span className="text-gray-400 dark:text-gray-600 hidden sm:inline">|</span>
-            <Link href="#" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition">
+            <Link href="/legal/terms-and-conditions" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition">
               Terms & Conditions
             </Link>
           </div>
