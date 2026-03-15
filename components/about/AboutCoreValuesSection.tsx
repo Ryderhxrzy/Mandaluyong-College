@@ -36,20 +36,20 @@ export default function AboutCoreValuesSection({
   const isStackedLayout = previewMode
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className={isStackedLayout ? 'flex flex-col gap-12' : 'grid md:grid-cols-2 gap-12 items-center'}>
           {/* Left Content */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">{title}</h2>
-            <p className="text-lg text-gray-700 mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">{title}</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-400 mb-8">
               {description}
             </p>
 
             {/* Core Values List */}
             <div className="space-y-3">
               {items.map((item) => (
-                <p key={item.id} className="text-base text-gray-700">
+                <p key={item.id} className="text-base text-gray-700 dark:text-gray-300">
                   <span className="font-bold text-primary">{item.name}:</span> {item.description}
                 </p>
               ))}
@@ -59,13 +59,13 @@ export default function AboutCoreValuesSection({
           {/* Right Image */}
           <div className="flex flex-col items-center">
             {image && (
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-4 border-gray-300 shadow-lg mb-6">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-4 border-gray-300 dark:border-gray-600 shadow-lg mb-6">
                 <Image src={image} alt="MCST Campus" fill className="object-cover" />
               </div>
             )}
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">{campusTitle}</h3>
-              <p className="text-lg text-gray-700">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{campusTitle}</h3>
+              <p className="text-lg text-gray-700 dark:text-gray-400">
                 {campusDescription}
               </p>
             </div>
