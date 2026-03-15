@@ -1,39 +1,26 @@
-import Image from 'next/image'
+import { ShieldCheck } from 'lucide-react'
 
-interface PrivacyHeroSectionProps {
-  logoImage?: string
-}
-
-export default function PrivacyHeroSection({
-  logoImage = '/mcst-logo.png',
-}: PrivacyHeroSectionProps) {
+export default function PrivacyHeroSection() {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 md:py-24">
+    <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-slate-800 dark:to-slate-900 text-white py-16 md:py-24">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 dark:text-white">
               Your Privacy
             </h1>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-blue-100 -mt-4">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-blue-100 dark:text-blue-300 -mt-4">
               Our Commitment
             </h1>
-            <p className="text-lg md:text-xl text-blue-100">
+            <p className="text-lg md:text-xl text-blue-100 dark:text-blue-300">
               How we protect and use your information at Mandaluyong College of Science and Technology
             </p>
           </div>
 
-          {/* Right Logo */}
+          {/* Right Privacy Icon */}
           <div className="flex justify-center items-center">
-            <div className="relative w-48 h-48 md:w-64 md:h-64">
-              <Image
-                src={logoImage}
-                alt="MCST Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
+            <ShieldCheck size={256} className="text-white opacity-90" />
           </div>
         </div>
       </div>
