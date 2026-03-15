@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import React from 'react'
 import * as LucideIcons from 'lucide-react'
 import { Plus, Trash2, Edit2, Upload } from 'lucide-react'
 import { CldUploadWidget, type CloudinaryUploadWidgetResults } from 'next-cloudinary'
 import toast from 'react-hot-toast'
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { supabase } from '@/lib/supabase'
 import IconPicker from '@/components/admin/IconPicker'
 import FeaturedPrograms, { type FeaturedProgramCard } from '@/components/academics/programs/FeaturedPrograms'
 
@@ -83,10 +83,66 @@ const DEFAULT_CARDS: FeaturedProgramCard[] = [
 export default function FeaturedProgramsPage() {
   const [title, setTitle] = useState('Our Featured Programs')
   const [subtitle, setSubtitle] = useState('Discover academic paths tailored for your success.')
-  const [items, setItems] = useState<FeaturedProgramCard[]>(DEFAULT_CARDS)
+  const [items, setItems] = useState<FeaturedProgramCard[]>([])
   const [editingItem, setEditingItem] = useState<FeaturedProgramCard | null>(null)
   const [showIconPicker, setShowIconPicker] = useState(false)
   const [isSavingHeader, setIsSavingHeader] = useState(false)
+  const [isSavingItem, setIsSavingItem] = useState(false)
+  const [isDeletingItem, setIsDeletingItem] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load header and programs from database on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load header
+        const headerResponse = await fetch('/api/admin/programs/header')
+        if (headerResponse.ok) {
+          const headerData = await headerResponse.json()
+          console.log('Loaded header:', headerData)
+          if (headerData.title) setTitle(headerData.title)
+          if (headerData.subtitle) setSubtitle(headerData.subtitle)
+        }
+
+        // Load programs
+        const programsResponse = await fetch('/api/admin/programs/featured')
+        if (programsResponse.ok) {
+          const programs = await programsResponse.json()
+          setItems(programs)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+        setItems(DEFAULT_CARDS)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  // Setup real-time subscription for header changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin_header_updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'programs_header' },
+        async () => {
+          console.log('Header updated from database, reloading...')
+          const response = await fetch('/api/admin/programs/header')
+          if (response.ok) {
+            const headerData = await response.json()
+            if (headerData.title) setTitle(headerData.title)
+            if (headerData.subtitle) setSubtitle(headerData.subtitle)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const activeCards = items.filter(card => card.status === 'available')
   const comingSoonCards = items.filter(card => card.status === 'coming-soon')
@@ -101,7 +157,8 @@ export default function FeaturedProgramsPage() {
       requiredStrand: '',
       backgroundImage: '',
       status: 'available',
-    })
+      courseCode: '',
+    } as any)
   }
 
   const handleAddComingSoon = () => {
@@ -115,38 +172,109 @@ export default function FeaturedProgramsPage() {
       backgroundImage: '',
       status: 'coming-soon',
       isNew: true,
-    })
+      courseCode: '',
+    } as any)
   }
 
   const handleEditItem = (item: FeaturedProgramCard) => {
     setEditingItem(item)
   }
 
-  const handleDeleteItem = (id: string) => {
+  const handleDeleteItem = async (id: string) => {
     if (!confirm('Are you sure you want to delete this program?')) return
-    setItems(items.filter(item => item.id !== id))
-    setEditingItem(null)
-    toast.success('Program deleted!')
+
+    setIsDeletingItem(true)
+    try {
+      const response = await fetch('/api/admin/programs/featured/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+
+      if (response.ok) {
+        setItems(items.filter(item => item.id !== id))
+        setEditingItem(null)
+        toast.success('Program deleted successfully!')
+      } else {
+        toast.error('Failed to delete program')
+      }
+    } catch (error) {
+      console.error('Error deleting program:', error)
+      toast.error('An error occurred while deleting')
+    } finally {
+      setIsDeletingItem(false)
+    }
   }
 
-  const handleSaveItem = () => {
+  const handleSaveItem = async () => {
     if (!editingItem?.title || !editingItem?.description) {
       toast.error('Title and description are required')
       return
     }
 
-    const isNew = !items.some(item => item.id === editingItem.id)
-    if (isNew) {
-      setItems([...items, editingItem])
-      toast.success('Program added successfully!')
-    } else {
-      setItems(items.map(item => item.id === editingItem.id ? editingItem : item))
-      toast.success('Program updated successfully!')
+    setIsSavingItem(true)
+    try {
+      const isTemporaryId = editingItem.id.startsWith(String(Date.now()).slice(0, 10))
+      const isNew = isTemporaryId || !items.some(item => item.id === editingItem.id)
+
+      const courseCodeValue = (editingItem as any).courseCode?.trim() || editingItem.title
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .slice(0, 10) || 'COURSE'
+
+      // Map status: 'available' becomes 'active', 'coming-soon' stays as is
+      const statusValue = editingItem.status === 'available' ? 'active' : 'coming-soon'
+
+      const payload: Record<string, unknown> = {
+        icon: editingItem.icon,
+        course_title: editingItem.title,
+        course_code: courseCodeValue,
+        course_description: editingItem.description,
+        course_image: editingItem.backgroundImage || null,
+        course_duration: editingItem.duration || '',
+        course_required_strand: editingItem.requiredStrand || '',
+        status: statusValue,
+        order: items.filter(i => i.status === editingItem.status).length,
+      }
+
+      // Only add ID if it's not a temporary ID
+      if (!isNew && !isTemporaryId) {
+        const numId = parseInt(editingItem.id)
+        if (!isNaN(numId)) {
+          payload.id = numId
+        }
+      }
+
+      const response = await fetch('/api/admin/programs/featured/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const responseData = await response.json()
+
+      if (response.ok) {
+        if (isNew) {
+          setItems([...items, { ...editingItem, id: responseData.data.id.toString() }])
+          toast.success('Program added successfully!')
+        } else {
+          setItems(items.map(item => item.id === editingItem.id ? editingItem : item))
+          toast.success('Program updated successfully!')
+        }
+        setEditingItem(null)
+      } else {
+        console.error('Save error response:', responseData)
+        toast.error(responseData.error || 'Failed to save program')
+      }
+    } catch (error) {
+      console.error('Error saving program:', error)
+      toast.error('An error occurred while saving')
+    } finally {
+      setIsSavingItem(false)
     }
-    setEditingItem(null)
   }
 
-  const handleCloudinaryUpload = (results: CloudinaryUploadWidgetResults) => {
+  const handleCloudinaryUpload = useCallback((results: CloudinaryUploadWidgetResults) => {
     if (
       results.event === 'success' &&
       results.info &&
@@ -154,9 +282,14 @@ export default function FeaturedProgramsPage() {
       'secure_url' in results.info
     ) {
       const imageUrl = (results.info as { secure_url: string }).secure_url
-      setEditingItem({ ...editingItem!, backgroundImage: imageUrl })
+      setEditingItem((prevItem) => {
+        if (prevItem) {
+          return { ...prevItem, backgroundImage: imageUrl }
+        }
+        return prevItem
+      })
     }
-  }
+  }, [])
 
   const handleSaveHeader = async () => {
     if (!title.trim() || !subtitle.trim()) {
@@ -183,6 +316,19 @@ export default function FeaturedProgramsPage() {
     } finally {
       setIsSavingHeader(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 w-full">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          Featured Programs
+        </h1>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-center text-gray-500 dark:text-gray-400">Loading programs...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -234,6 +380,19 @@ export default function FeaturedProgramsPage() {
                   type="text"
                   value={editingItem.title}
                   onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                  Course Code
+                </label>
+                <input
+                  type="text"
+                  value={((editingItem as Record<string, unknown>).courseCode as string) || ''}
+                  onChange={(e) => setEditingItem({ ...editingItem, courseCode: e.target.value } as Record<string, unknown> & FeaturedProgramCard)}
+                  placeholder="e.g., BACS, BSIS"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -312,15 +471,17 @@ export default function FeaturedProgramsPage() {
               <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => setEditingItem(null)}
-                  className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                  disabled={isSavingItem}
+                  className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveItem}
-                  className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer"
+                  disabled={isSavingItem}
+                  className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save Program
+                  {isSavingItem ? 'Saving...' : 'Save Program'}
                 </button>
               </div>
             </div>
@@ -334,8 +495,8 @@ export default function FeaturedProgramsPage() {
                     title={title}
                     subtitle={subtitle}
                     cards={editingItem.status === 'available'
-                      ? [...activeCards, editingItem]
-                      : [...comingSoonCards, editingItem]
+                      ? [...activeCards.filter(c => c.id !== editingItem.id), editingItem]
+                      : [...comingSoonCards.filter(c => c.id !== editingItem.id), editingItem]
                     }
                     cols={2}
                   />
@@ -375,7 +536,10 @@ export default function FeaturedProgramsPage() {
                     className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl"
                   >
                     <div className="flex-1">
-                      <p className="font-bold text-gray-900 dark:text-white">{item.title}</p>
+                      <p className="font-bold text-gray-900 dark:text-white">
+                        {item.title}
+                        {item.courseCode && <span className="ml-2 text-sm font-semibold">({item.courseCode})</span>}
+                      </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-md">{item.duration} • {item.requiredStrand}</p>
                     </div>
                     <div className="flex gap-2">
@@ -387,7 +551,8 @@ export default function FeaturedProgramsPage() {
                       </button>
                       <button
                         onClick={() => handleDeleteItem(item.id)}
-                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer"
+                        disabled={isDeletingItem}
+                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -419,7 +584,10 @@ export default function FeaturedProgramsPage() {
                     className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl"
                   >
                     <div className="flex-1">
-                      <p className="font-bold text-gray-900 dark:text-white">{item.title}</p>
+                      <p className="font-bold text-gray-900 dark:text-white">
+                        {item.title}
+                        {item.courseCode && <span className="ml-2 text-sm font-semibold">({item.courseCode})</span>}
+                      </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-md">{item.duration} • {item.requiredStrand}</p>
                     </div>
                     <div className="flex gap-2">
@@ -431,7 +599,8 @@ export default function FeaturedProgramsPage() {
                       </button>
                       <button
                         onClick={() => handleDeleteItem(item.id)}
-                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer"
+                        disabled={isDeletingItem}
+                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -449,6 +618,7 @@ export default function FeaturedProgramsPage() {
       {/* Icon Picker Modal */}
       {showIconPicker && editingItem && (
         <IconPicker
+          selectedIcon={editingItem.icon}
           onSelect={(icon) => {
             setEditingItem({ ...editingItem, icon })
             setShowIconPicker(false)
