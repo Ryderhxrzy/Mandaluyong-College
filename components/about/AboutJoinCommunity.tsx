@@ -27,12 +27,12 @@ export default function AboutJoinCommunity({
   const isStackedLayout = previewMode
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className={isStackedLayout ? 'flex flex-col gap-12' : 'grid md:grid-cols-2 gap-12 items-center'}>
           {/* Left Content */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
               {title.split('\n').map((line, i) => (
                 <span key={i}>
                   {line}
@@ -40,7 +40,7 @@ export default function AboutJoinCommunity({
                 </span>
               ))}
             </h2>
-            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+            <p className="text-lg text-gray-700 dark:text-gray-400 mb-8 leading-relaxed">
               {description}
             </p>
             <Link
