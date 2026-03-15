@@ -83,6 +83,17 @@ interface HeaderData {
   subtitle: string
 }
 
+interface BannerData {
+  id: string | null
+  imageUrl: string
+}
+
+interface CTAData {
+  id: string | null
+  title: string
+  subtitle: string
+}
+
 interface RealtimeProgramWrapperProps {
   bannerImageUrl?: string
 }
@@ -94,6 +105,17 @@ export default function RealtimeProgramWrapper({
     id: null,
     title: 'Our Featured Programs',
     subtitle: 'Discover academic paths tailored for your success.',
+  })
+
+  const [bannerData, setBannerData] = useState<BannerData>({
+    id: null,
+    imageUrl: '/banner.jpg',
+  })
+
+  const [ctaData, setCtaData] = useState<CTAData>({
+    id: null,
+    title: 'Elevate Your Future With Mandaluyong College of Science and Technology',
+    subtitle: 'Whether you\'re aiming to innovate, lead, serve, or create—your journey starts here. Our programs are designed to not just prepare you for a job, but to shape you into a visionary ready to transform the world.',
   })
 
   const [cards, setCards] = useState<FeaturedProgramCard[]>([])
@@ -141,18 +163,45 @@ export default function RealtimeProgramWrapper({
     }
   }, [])
 
+  const fetchBanner = useCallback(async () => {
+    try {
+      console.log('Fetching banner...')
+      const response = await fetch('/api/admin/programs/hero')
+      if (response.ok) {
+        const banner = await response.json()
+        console.log('Banner data received:', banner)
+        setBannerData(banner)
+      }
+    } catch (error) {
+      console.error('Error fetching banner:', error)
+    }
+  }, [])
+
+  const fetchCTA = useCallback(async () => {
+    try {
+      console.log('Fetching CTA...')
+      const response = await fetch('/api/admin/programs/cta')
+      if (response.ok) {
+        const cta = await response.json()
+        console.log('CTA data received:', cta)
+        setCtaData(cta)
+      }
+    } catch (error) {
+      console.error('Error fetching CTA:', error)
+    }
+  }, [])
+
   const setupRealtimeSubscriptions = useCallback(() => {
     console.log('Setting up real-time subscriptions...')
 
     // Subscribe to header changes
     const headerChannel = supabase
-      .channel('programs_header_realtime', { realtime: { self: true } })
+      .channel('programs_header_realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'programs_header' },
         async (payload) => {
           console.log('Header change detected:', payload)
-          console.log('Refetching header...')
           await fetchHeader()
         }
       )
@@ -162,13 +211,12 @@ export default function RealtimeProgramWrapper({
 
     // Subscribe to featured programs changes
     const programsChannel = supabase
-      .channel('programs_featured_realtime', { realtime: { self: true } })
+      .channel('programs_featured_realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'programs_featured_programs' },
         async (payload) => {
           console.log('Programs change detected:', payload)
-          console.log('Refetching programs...')
           await fetchCards()
         }
       )
@@ -176,12 +224,44 @@ export default function RealtimeProgramWrapper({
         console.log('Programs subscription status:', status)
       })
 
+    // Subscribe to hero changes
+    const bannerChannel = supabase
+      .channel('programs_hero_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'programs_hero_section' },
+        async (payload) => {
+          console.log('Banner change detected:', payload)
+          await fetchBanner()
+        }
+      )
+      .subscribe((status) => {
+        console.log('Banner subscription status:', status)
+      })
+
+    // Subscribe to CTA changes
+    const ctaChannel = supabase
+      .channel('programs_cta_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'programs_cta_section' },
+        async (payload) => {
+          console.log('CTA change detected:', payload)
+          await fetchCTA()
+        }
+      )
+      .subscribe((status) => {
+        console.log('CTA subscription status:', status)
+      })
+
     return () => {
       console.log('Cleaning up subscriptions...')
       supabase.removeChannel(headerChannel)
       supabase.removeChannel(programsChannel)
+      supabase.removeChannel(bannerChannel)
+      supabase.removeChannel(ctaChannel)
     }
-  }, [fetchHeader, fetchCards])
+  }, [fetchHeader, fetchCards, fetchBanner, fetchCTA])
 
   useEffect(() => {
     let mounted = true
@@ -190,6 +270,8 @@ export default function RealtimeProgramWrapper({
       if (mounted) {
         await fetchCards()
         await fetchHeader()
+        await fetchBanner()
+        await fetchCTA()
         if (mounted) {
           setIsInitialLoad(false)
         }
@@ -200,7 +282,7 @@ export default function RealtimeProgramWrapper({
     return () => {
       mounted = false
     }
-  }, [fetchCards, fetchHeader])
+  }, [fetchCards, fetchHeader, fetchBanner, fetchCTA])
 
   useEffect(() => {
     // Set up real-time subscriptions after initial load
@@ -211,13 +293,13 @@ export default function RealtimeProgramWrapper({
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <ProgramsBanner backgroundImageUrl={bannerImageUrl} />
+      <ProgramsBanner backgroundImageUrl={bannerData.imageUrl} />
       <FeaturedPrograms
         title={headerData.title}
         subtitle={headerData.subtitle}
         cards={cards}
       />
-      <ProgramsCTA />
+      <ProgramsCTA title={ctaData.title} subtitle={ctaData.subtitle} />
     </div>
   )
 }
