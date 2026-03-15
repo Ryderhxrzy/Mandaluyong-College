@@ -33,7 +33,7 @@ export default function Footer() {
             <h3 className="text-gray-900 dark:text-white font-bold text-base mb-6">Quick Links</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/admissions" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                <Link href="/apply" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
                   Apply
                 </Link>
               </li>
@@ -43,7 +43,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/academics" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                <Link href="/programs" className="text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
                   Programs
                 </Link>
               </li>
