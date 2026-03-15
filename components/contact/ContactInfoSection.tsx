@@ -34,7 +34,7 @@ export default function ContactInfoSection({
   }
 
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Left Content */}
@@ -46,8 +46,8 @@ export default function ContactInfoSection({
                   {getIcon(item.type)}
                 </div>
                 <div>
-                  <h3 className="text-base md:text-lg font-bold text-gray-900 mb-1">{item.label}</h3>
-                  <p className="text-sm text-gray-700">{item.content}</p>
+                  <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-1">{item.label}</h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{item.content}</p>
                 </div>
               </div>
             ))}
