@@ -8,18 +8,18 @@ export default function AboutMissionVision({
   vision = 'A college of distinction in Science and Technology committed to produce high caliber and employable graduates.',
 }: AboutMissionVisionProps) {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className="grid md:grid-cols-2 gap-12">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Our Mission</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">Our Mission</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-400 leading-relaxed">
               {mission}
             </p>
           </div>
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Our Vision</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">Our Vision</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-400 leading-relaxed">
               {vision}
             </p>
           </div>
