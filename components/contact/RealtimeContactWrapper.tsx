@@ -39,8 +39,6 @@ export default function RealtimeContactWrapper() {
     items: [],
   })
 
-  const [loading, setLoading] = useState(true)
-
   const fetchData = useCallback(async () => {
     try {
       const [heroResponse, infoResponse] = await Promise.all([
@@ -59,8 +57,6 @@ export default function RealtimeContactWrapper() {
       }
     } catch (error) {
       console.error('Error fetching contact data:', error)
-    } finally {
-      setLoading(false)
     }
   }, [])
 
@@ -124,14 +120,6 @@ export default function RealtimeContactWrapper() {
     fetchData()
     return setupRealtimeSubscriptions()
   }, [fetchData, setupRealtimeSubscriptions])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">Loading...</p>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-white">
