@@ -318,6 +318,7 @@ export default function FeaturedProgramsPage() {
     }
   }
 
+
   if (isLoading) {
     return (
       <div className="p-6 w-full">
@@ -390,8 +391,8 @@ export default function FeaturedProgramsPage() {
                 </label>
                 <input
                   type="text"
-                  value={((editingItem as Record<string, unknown>).courseCode as string) || ''}
-                  onChange={(e) => setEditingItem({ ...editingItem, courseCode: e.target.value } as Record<string, unknown> & FeaturedProgramCard)}
+                  value={editingItem.courseCode || ''}
+                  onChange={(e) => setEditingItem({ ...editingItem, courseCode: e.target.value })}
                   placeholder="e.g., BACS, BSIS"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
