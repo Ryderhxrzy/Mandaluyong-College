@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 
 export default function ProgramsCTA() {
   return (
@@ -14,9 +15,10 @@ export default function ProgramsCTA() {
         </p>
         <Link
           href="/admissions"
-          className="inline-block bg-primary hover:bg-[#003a7a] text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 bg-primary hover:bg-[#003a7a] text-white font-semibold px-8 py-3 rounded-lg transition-colors"
         >
           Start Your Journey
+          <ArrowRight size={20} />
         </Link>
       </div>
     </section>
