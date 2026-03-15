@@ -12,12 +12,12 @@ export default function ContactHeroSection({
   logoImage = '/mcst-logo.png',
 }: ContactHeroSectionProps) {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 md:py-24">
+    <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-slate-800 dark:to-slate-900 text-white py-16 md:py-24">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-16">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 dark:text-white">
               {title.split('\n').map((line, i) => (
                 <span key={i}>
                   {line}
@@ -25,7 +25,7 @@ export default function ContactHeroSection({
                 </span>
               ))}
             </h1>
-            <p className="text-lg md:text-xl text-blue-100">
+            <p className="text-lg md:text-xl text-blue-100 dark:text-blue-300">
               {subtitle}
             </p>
           </div>
