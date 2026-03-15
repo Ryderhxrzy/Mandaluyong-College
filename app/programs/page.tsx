@@ -1,11 +1,5 @@
-import ProgramsBanner from '@/components/academics/programs/ProgramsBanner'
-import FeaturedPrograms from '@/components/academics/programs/FeaturedPrograms'
+import RealtimeProgramWrapper from '@/components/academics/programs/RealtimeProgramWrapper'
 
 export default function Academics() {
-  return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <ProgramsBanner backgroundImageUrl="/banner.jpg" />
-      <FeaturedPrograms />
-    </div>
-  )
+  return <RealtimeProgramWrapper />
 }
