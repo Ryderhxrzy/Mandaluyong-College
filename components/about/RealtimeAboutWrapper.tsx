@@ -81,11 +81,73 @@ export default function RealtimeAboutWrapper({
   // Why Choose Section State
   const [whyChooseTitle, setWhyChooseTitle] = useState(initialWhyChooseTitle)
   const [whyChooseSubtitle, setWhyChooseSubtitle] = useState(initialWhyChooseSubtitle)
-  const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(initialWhyChooseCards)
+  const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(
+    initialWhyChooseCards.length > 0
+      ? initialWhyChooseCards
+      : [
+          {
+            id: '1',
+            icon: 'BookOpen',
+            title: 'Quality Education',
+            description: 'Comprehensive programs designed to prepare students for success.',
+            iconColor: '#003a7a',
+            bgColorLight: '#ebf2fa',
+            bgColorDark: '#1e3a8a',
+          },
+          {
+            id: '2',
+            icon: 'Lightbulb',
+            title: 'Innovation & Research',
+            description: 'Dynamic research culture driving continuous improvement.',
+            iconColor: '#003a7a',
+            bgColorLight: '#ebf2fa',
+            bgColorDark: '#1e3a8a',
+          },
+          {
+            id: '3',
+            icon: 'Users',
+            title: 'Supportive Community',
+            description: 'A caring environment where everyone is empowered to thrive.',
+            iconColor: '#003a7a',
+            bgColorLight: '#ebf2fa',
+            bgColorDark: '#1e3a8a',
+          },
+          {
+            id: '4',
+            icon: 'Award',
+            title: 'Excellence & Service',
+            description: 'Guided by values of integrity, nationalism, and public service.',
+            iconColor: '#003a7a',
+            bgColorLight: '#ebf2fa',
+            bgColorDark: '#1e3a8a',
+          },
+        ]
+  )
 
   // Goals Section State
   const [goalTitle, setGoalTitle] = useState('Goals')
-  const [goalItems, setGoalItems] = useState<GoalItem[]>([])
+  const [goalItems, setGoalItems] = useState<GoalItem[]>([
+    {
+      id: '1',
+      description: 'Provide Mandaleño access to quality higher education.',
+    },
+    {
+      id: '2',
+      description: 'Support optimum advancement in instruction, technology, research, innovation, and resource generation.',
+    },
+    {
+      id: '3',
+      description: 'Collaborate with various educational, technical, and professional stakeholders for genuine public service.',
+    },
+    {
+      id: '4',
+      description: 'Foster institutional effectiveness and efficiency for continuous improvement and total quality management.',
+    },
+    {
+      id: '5',
+      description: 'Produce graduates who are locally and internationally competent with a high sense of nationalism.',
+    },
+  ])
 
   // Philosophy Section State
   const [philosophyTitle, setPhilosophyTitle] = useState('Philosophy')
@@ -103,12 +165,22 @@ export default function RealtimeAboutWrapper({
   const [coreValuesImage, setCoreValuesImage] = useState('/mcst-core.jpg')
   const [coreValuesCampusTitle, setCoreValuesCampusTitle] = useState('Our Campus')
   const [coreValuesCampusDescription, setCoreValuesCampusDescription] = useState('A center of excellence fostering academic growth, character development, and community service in the heart of Mandaluyong.')
-  const [coreValuesItems, setCoreValuesItems] = useState<CoreValueItem[]>([])
+  const [coreValuesItems, setCoreValuesItems] = useState<CoreValueItem[]>([
+    { id: '1', name: 'Naglilingkod', description: 'Genuine service to the general public.' },
+    { id: '2', name: 'Kumakalinga', description: 'Caring and nurturing people, the environment, and the country.' },
+    { id: '3', name: 'Disiplinado', description: 'Integrity anchored on responsibility and accountability.' },
+    { id: '4', name: 'Gawa Hindi Salita', description: 'Known for actions rather than words.' },
+    { id: '5', name: 'Makabansa', description: 'High sense of nationalism and concern for the greater good.' },
+    { id: '6', name: 'Kahusayan', description: 'Academic excellence, effective governance, and leadership.' },
+  ])
 
   // Join Community Section State
   const [joinCommunityTitle, setJoinCommunityTitle] = useState('Advancing Science.\nEmpowering Mandaleños.')
   const [joinCommunityDescription, setJoinCommunityDescription] = useState('At Mandaluyong College of Science and Technology, we champion excellence in instruction, innovation, and inclusive education. Our commitment is rooted in public service, research, and producing globally competitive graduates with a strong sense of nationalism. Be part of a future-forward institution shaping the leaders of tomorrow.')
-  const [joinCommunityImages, setJoinCommunityImages] = useState<JoinCommunityImage[]>([])
+  const [joinCommunityImages, setJoinCommunityImages] = useState<JoinCommunityImage[]>([
+    { id: '1', image: '/join1.jpg', altText: 'MCST Building' },
+    { id: '2', image: '/join2.jpg', altText: 'MCST Campus' },
+  ])
 
   useEffect(() => {
     fetchInitialData()
@@ -722,7 +794,7 @@ export default function RealtimeAboutWrapper({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <AboutBanner backgroundImageUrl={bannerBackgroundImage} />
       <AboutKeyStatistics
         title={keyStatisticsTitle}
