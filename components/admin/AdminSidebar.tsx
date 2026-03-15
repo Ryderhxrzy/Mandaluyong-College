@@ -85,7 +85,21 @@ const navItems: NavItem[] = [
     href: '/admin/pages/academics',
     icon: GraduationCap,
     children: [
-      { label: 'Programs', href: '/admin/pages/academics/programs', icon: Briefcase },
+      {
+        label: 'Programs',
+        href: '/admin/pages/academics/programs',
+        icon: Briefcase,
+        children: [
+          { label: 'Hero Section', href: '/admin/pages/academics/programs/hero', icon: Zap },
+          { label: 'Featured Programs', href: '/admin/pages/academics/programs/featured', icon: Award },
+          { label: 'CTA Section', href: '/admin/pages/academics/programs/cta', icon: Mail },
+        ],
+      },
+      {
+        label: 'Admissions',
+        href: '/admin/pages/academics/admissions',
+        icon: FileText,
+      },
     ],
   },
   {
@@ -97,15 +111,6 @@ const navItems: NavItem[] = [
     label: 'FAQs',
     href: '/admin/pages/faqs',
     icon: HelpCircle,
-  },
-  {
-    label: 'Resources',
-    href: '/admin/pages/resources',
-    icon: BookOpen,
-    children: [
-      { label: "Registrar's Office", href: '/admin/pages/resources/registrar', icon: Clipboard },
-      { label: 'Learning Resource Center', href: '/admin/pages/resources/lrc', icon: Library },
-    ],
   },
   {
     label: 'Contact',
