@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { supabase } from '@/lib/supabase'
 import ProgramsCTA from '@/components/academics/programs/ProgramsCTA'
 
 export default function ProgramsCTAPage() {
@@ -32,29 +31,6 @@ export default function ProgramsCTAPage() {
     loadCTA()
   }, [])
 
-  // Real-time subscription for CTA changes
-  useEffect(() => {
-    const channel = supabase
-      .channel('cta_section_updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'programs_cta_section' },
-        async () => {
-          console.log('CTA updated, reloading...')
-          const response = await fetch('/api/admin/programs/cta')
-          if (response.ok) {
-            const data = await response.json()
-            if (data.title) setCtaTitle(data.title)
-            if (data.subtitle) setCtaSubtitle(data.subtitle)
-          }
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
 
   const handleSaveCTA = async () => {
     if (!ctaTitle.trim() || !ctaSubtitle.trim()) {
