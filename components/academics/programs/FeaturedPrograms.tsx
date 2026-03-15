@@ -20,6 +20,7 @@ interface FeaturedProgramsProps {
   title?: string
   subtitle?: string
   cards?: FeaturedProgramCard[]
+  cols?: number
 }
 
 const DEFAULT_CARDS: FeaturedProgramCard[] = [
@@ -95,7 +96,16 @@ export default function FeaturedPrograms({
   title = 'Our Featured Programs',
   subtitle = 'Discover academic paths tailored for your success.',
   cards = DEFAULT_CARDS,
+  cols = 3,
 }: FeaturedProgramsProps) {
+  // Filter cards by status - treat undefined status as 'available'
+  const activeCards = cards.filter(
+    (card) => card.status === 'available' || card.status === undefined
+  )
+  const comingSoonCards = cards.filter((card) => card.status === 'coming-soon')
+
+  const gridClass = cols === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'
+
   return (
     <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-16">
@@ -110,27 +120,76 @@ export default function FeaturedPrograms({
         </div>
 
         {/* Featured Programs Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className={`grid ${gridClass} gap-6 mb-8`}>
           {/* Top Row - Featured Cards with Background Images */}
-          {cards.slice(0, 3).map((card) => {
+          {activeCards.map((card) => {
             const IconComponent = (LucideIcons as any)[card.icon] || LucideIcons.GraduationCap
 
+            // If no background image, render like coming-soon card
+            if (!card.backgroundImage) {
+              return (
+                <div
+                  key={card.id}
+                  className="relative group rounded-xl overflow-hidden h-96 border border-gray-200 dark:border-gray-700"
+                >
+                  {/* Background */}
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900"></div>
+
+                  {/* Content */}
+                  <div className="absolute inset-0 p-5 md:p-6 flex flex-col text-gray-900 dark:text-white">
+                    {/* Icon - Centered at top */}
+                    <div className="flex justify-center mb-4">
+                      <IconComponent size={50} className="text-blue-600 dark:text-white" />
+                    </div>
+
+                    {/* Title & Description - Center */}
+                    <div className="flex-1 flex flex-col justify-center items-start max-w-sm">
+                      <h3 className="text-2xl md:text-2xl font-bold mb-2">
+                        {card.title}
+                      </h3>
+                      <p className="text-sm text-gray-700 dark:text-gray-200 mb-4 leading-relaxed">
+                        {card.description}
+                      </p>
+
+                      {/* Duration & Strand */}
+                      <div className="space-y-1 mb-4 text-gray-700 dark:text-gray-200">
+                        <p className="text-sm">
+                          <span className="font-semibold text-gray-900 dark:text-white">Duration:</span> {card.duration}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-semibold text-gray-900 dark:text-white">Required Strand:</span>{' '}
+                          {card.requiredStrand}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Button - Anchored at bottom */}
+                    <div className="mt-auto">
+                      <Link
+                        href={`/programs/course?name=${card.title.split(' ').join('-')}`}
+                        className="inline-block bg-primary hover:bg-[#003a7a] text-white px-4 py-1.5 rounded-lg font-medium text-sm transition-colors"
+                      >
+                        Learn More
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            // Otherwise render with image and overlay
             return (
               <div
                 key={card.id}
                 className="relative group rounded-xl overflow-hidden h-96 border border-gray-200 dark:border-gray-700"
               >
                 {/* Background Image */}
-                {card.backgroundImage ? (
-                  <Image
-                    src={card.backgroundImage}
-                    alt={card.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800"></div>
-                )}
+                <Image
+                  src={card.backgroundImage}
+                  alt={card.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black/75 group-hover:bg-black/80 transition-colors"></div>
@@ -179,8 +238,8 @@ export default function FeaturedPrograms({
         </div>
 
         {/* Bottom Row - Additional Programs */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {cards.slice(3).map((card) => {
+        <div className={`grid ${gridClass} gap-6`}>
+          {comingSoonCards.map((card) => {
             const IconComponent = (LucideIcons as any)[card.icon] || LucideIcons.GraduationCap
 
             return (
