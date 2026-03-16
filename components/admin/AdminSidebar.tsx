@@ -28,6 +28,8 @@ import {
   X,
   Award,
   Users,
+  Image as ImageIcon,
+  Layers,
 } from 'lucide-react'
 
 interface NavItem {
@@ -93,6 +95,16 @@ const navItems: NavItem[] = [
           { label: 'Hero Section', href: '/admin/pages/academics/programs/hero', icon: Zap },
           { label: 'Featured Programs', href: '/admin/pages/academics/programs/featured', icon: Award },
           { label: 'CTA Section', href: '/admin/pages/academics/programs/cta', icon: Mail },
+          {
+            label: 'Course Details',
+            href: '/admin/pages/academics/programs/course-details',
+            icon: Layers,
+            children: [
+              { label: 'Course Images', href: '/admin/pages/academics/programs/course-details/images', icon: ImageIcon },
+              { label: 'Possible Careers', href: '/admin/pages/academics/programs/course-details/careers', icon: Briefcase },
+              { label: 'Course Curriculum', href: '/admin/pages/academics/programs/course-details/curriculum', icon: BookOpen },
+            ],
+          },
         ],
       },
       {
@@ -133,29 +145,27 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   useEffect(() => {
     setMounted(true)
     const newExpanded = new Set<string>()
-    navItems.forEach((item) => {
-      if (item.children) {
-        // Check if any first-level child is active
-        const hasActiveChild = item.children.some((child) => pathname.startsWith(child.href))
-        if (hasActiveChild) {
-          newExpanded.add(item.href)
-        }
 
-        // Check if any second-level child (grandchild) is active and expand parent
-        const hasActiveGrandchild = item.children.some((child) => {
-          return child.children && child.children.some((grandchild) => pathname.startsWith(grandchild.href))
-        })
-        if (hasActiveGrandchild) {
-          newExpanded.add(item.href)
-          // Also expand the second-level parent
-          item.children.forEach((child) => {
-            if (child.children && child.children.some((grandchild) => pathname.startsWith(grandchild.href))) {
-              newExpanded.add(child.href)
-            }
-          })
+    const expandActiveItems = (items: NavItem[], parentHrefs: string[] = []) => {
+      items.forEach((item) => {
+        if (item.children) {
+          // Check if any child is active
+          const hasActiveChild = item.children.some((child) => pathname.startsWith(child.href))
+          if (hasActiveChild) {
+            // Expand this item and all parents
+            newExpanded.add(item.href)
+            parentHrefs.forEach((href) => newExpanded.add(href))
+            // Recursively expand children
+            expandActiveItems(item.children, [...parentHrefs, item.href])
+          } else {
+            // Recursively check deeper children
+            expandActiveItems(item.children, [...parentHrefs, item.href])
+          }
         }
-      }
-    })
+      })
+    }
+
+    expandActiveItems(navItems)
     setExpandedGroups(newExpanded)
   }, [pathname])
 
