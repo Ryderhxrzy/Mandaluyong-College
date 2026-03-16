@@ -430,7 +430,10 @@ export default function CareersPageContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Careers List */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Careers</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Careers</h2>
+            <span className="px-3 py-1 bg-primary text-white rounded-full text-sm font-medium">{careers.length} careers</span>
+          </div>
           <div className="space-y-3">
             {careers.length === 0 ? (
               <p className="text-center text-gray-500 dark:text-gray-400 py-8">No careers added yet</p>
