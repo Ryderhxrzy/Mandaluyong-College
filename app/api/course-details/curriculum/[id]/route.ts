@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> | { id: string } }) {
   try {
@@ -17,6 +18,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const numericCourseId = parseInt(courseId)
     if (isNaN(numericCourseId)) {
       return NextResponse.json({ error: 'Invalid course ID' }, { status: 400 })
+    }
+
+    const cacheKey = cacheKeys.courseCurriculum(courseId)
+
+    // Try to get from cache first
+    try {
+      const cachedCurriculum = await redis.get(cacheKey)
+      if (cachedCurriculum) {
+        console.log(`Cache hit for curriculum:${courseId}`)
+        return NextResponse.json(cachedCurriculum)
+      }
+    } catch (cacheError) {
+      console.log('Cache read error (continuing without cache):', cacheError)
     }
 
     // Fetch curriculum years
@@ -77,6 +91,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         ...year,
         semesters: semesterData,
       })
+    }
+
+    // Store in cache
+    try {
+      await redis.setex(cacheKey, CACHE_TTL, curriculumData)
+    } catch (cacheError) {
+      console.log('Cache write error:', cacheError)
     }
 
     console.log('Curriculum data fetched successfully, total years:', curriculumData.length)
