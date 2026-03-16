@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys, CACHE_TTL } from '@/lib/redis'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> | { id: string } }) {
   try {
@@ -26,6 +27,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Invalid course ID' }, { status: 400 })
     }
 
+    const cacheKey = cacheKeys.courseCareers(courseId)
+
+    // Try to get from cache first
+    try {
+      const cachedCareers = await redis.get(cacheKey)
+      if (cachedCareers) {
+        console.log(`Cache hit for careers:${courseId}`)
+        return NextResponse.json(cachedCareers)
+      }
+    } catch (cacheError) {
+      console.log('Cache read error (continuing without cache):', cacheError)
+    }
+
     // Fetch course possible careers
     console.log('Querying course_possible_careers for course_id:', numericCourseId)
     const { data: careers, error: careersError } = await supabaseAdmin
@@ -44,8 +58,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       }, { status: 400 })
     }
 
-    console.log('Returning', careers?.length || 0, 'careers')
-    return NextResponse.json(careers || [])
+    const result = careers || []
+
+    // Store in cache
+    try {
+      await redis.setex(cacheKey, CACHE_TTL, result)
+    } catch (cacheError) {
+      console.log('Cache write error:', cacheError)
+    }
+
+    console.log('Returning', result.length, 'careers')
+    return NextResponse.json(result)
   } catch (error) {
     console.error('=== Catch Error ===')
     console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error)
