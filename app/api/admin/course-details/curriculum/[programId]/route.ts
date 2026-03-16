@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 export async function POST(
   request: NextRequest,
@@ -37,6 +38,15 @@ export async function POST(
       .single()
 
     if (error) throw error
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCurriculum(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for curriculum:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
 
     return NextResponse.json({ message: 'Course added successfully', data })
   } catch (error) {
