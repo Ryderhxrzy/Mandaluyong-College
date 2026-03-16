@@ -298,6 +298,12 @@ export default function CurriculumPageContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Curriculum Display */}
         <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Curriculum Overview</h2>
+            <span className="px-3 py-1 bg-primary text-white rounded-full text-sm font-medium">
+              {curriculum.reduce((total, year) => total + year.semesters.reduce((semTotal, sem) => semTotal + sem.courses.length, 0), 0)} courses
+            </span>
+          </div>
           {curriculum.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400">No curriculum data yet. Add courses to get started.</p>
