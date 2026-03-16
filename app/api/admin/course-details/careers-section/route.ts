@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 export async function GET(request: Request) {
   try {
@@ -83,6 +84,14 @@ export async function POST(request: Request) {
     // If insert succeeded, return the new record
     if (!insertError && insertData && insertData.length > 0) {
       console.log('Insert success')
+      // Invalidate cache
+      const cacheKey = cacheKeys.courseCareerSection(String(courseId))
+      try {
+        await redis.del(cacheKey)
+        console.log(`Cache invalidated for career-section:${courseId}`)
+      } catch (cacheError) {
+        console.log('Cache invalidation error:', cacheError)
+      }
       return NextResponse.json(insertData[0], { status: 201 })
     }
 
@@ -108,6 +117,14 @@ export async function POST(request: Request) {
 
       if (updateData && updateData.length > 0) {
         console.log('Update success')
+        // Invalidate cache
+        const cacheKey = cacheKeys.courseCareerSection(String(courseId))
+        try {
+          await redis.del(cacheKey)
+          console.log(`Cache invalidated for career-section:${courseId}`)
+        } catch (cacheError) {
+          console.log('Cache invalidation error:', cacheError)
+        }
         return NextResponse.json(updateData[0])
       }
 
@@ -152,6 +169,15 @@ export async function PUT(request: Request) {
 
     if (!data || data.length === 0) {
       return NextResponse.json({ error: 'No record updated' }, { status: 400 })
+    }
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCareerSection(String(courseId))
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for career-section:${courseId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
     }
 
     return NextResponse.json(data[0])
