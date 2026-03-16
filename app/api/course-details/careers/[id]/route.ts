@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     console.log('Querying course_possible_careers for course_id:', numericCourseId)
     const { data: careers, error: careersError } = await supabaseAdmin
       .from('course_possible_careers')
-      .select('career_title, career_description')
+      .select('id, career_title, career_description')
       .eq('course_id', numericCourseId)
       .order('order_number', { ascending: true })
 
