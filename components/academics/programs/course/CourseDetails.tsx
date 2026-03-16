@@ -122,9 +122,35 @@ export default function CourseDetails({ program, courseId }: { program: CourseDe
       )
       .subscribe()
 
+    // Subscribe to real-time changes for images
+    const imagesSubscription = supabase
+      .channel(`course_images_realtime_${courseId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'course_details_images',
+        },
+        async () => {
+          // Refetch images when any change occurs
+          try {
+            const imagesResponse = await fetch(`/api/course-details/images/${courseId}`)
+            if (imagesResponse.ok) {
+              const imageData = await imagesResponse.json()
+              setImages(Array.isArray(imageData) ? imageData : [])
+            }
+          } catch (error) {
+            console.error('Error refetching images:', error)
+          }
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(careersSubscription)
       supabase.removeChannel(sectionSubscription)
+      supabase.removeChannel(imagesSubscription)
     }
   }, [courseId])
 
