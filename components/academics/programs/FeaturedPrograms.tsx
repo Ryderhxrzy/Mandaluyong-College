@@ -168,7 +168,7 @@ export default function FeaturedPrograms({
                     {/* Button - Anchored at bottom */}
                     <div className="mt-auto">
                       <Link
-                        href={`/programs/course?name=${card.title.split(' ').join('-')}`}
+                        href={`/programs/course?id=${card.id}`}
                         className="inline-block bg-primary hover:bg-[#003a7a] text-white px-4 py-1.5 rounded-lg font-medium text-sm transition-colors"
                       >
                         Learn More
@@ -228,7 +228,7 @@ export default function FeaturedPrograms({
                   {/* Button - Anchored at bottom */}
                   <div className="mt-auto">
                     <Link
-                      href={`/programs/course?name=${card.title.split(' ').join('-')}`}
+                      href={`/programs/course?id=${card.id}`}
                       className="inline-block bg-primary hover:bg-[#003a7a] text-white px-4 py-1.5 rounded-lg font-medium text-sm transition-colors"
                     >
                       Learn More
