@@ -16,6 +16,7 @@ export default function CourseImagesPageContent() {
   const searchParams = useSearchParams()
   const programId = searchParams.get('program')
   const [images, setImages] = useState<string[]>([])
+  const [pendingImage, setPendingImage] = useState<string | null>(null)
   const [programTitle, setProgramTitle] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -57,8 +58,38 @@ export default function CourseImagesPageContent() {
       'secure_url' in results.info
     ) {
       const imageUrl = (results.info as { secure_url: string }).secure_url
-      setImages([...images, imageUrl])
-      toast.success('Image added successfully')
+      setPendingImage(imageUrl)
+      toast.success('Image uploaded. Click Save to add to course.')
+    }
+  }
+
+  const handleSaveImage = async () => {
+    if (!pendingImage) {
+      toast.error('No image to save')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const newImages = [...images, pendingImage]
+      const response = await fetch(`/api/admin/course-details/images/${programId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: newImages }),
+      })
+
+      if (response.ok) {
+        setImages(newImages)
+        setPendingImage(null)
+        toast.success('Image saved successfully')
+      } else {
+        toast.error('Failed to save image')
+      }
+    } catch (error) {
+      console.error('Error saving image:', error)
+      toast.error('Error saving image')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -76,7 +107,7 @@ export default function CourseImagesPageContent() {
 
       if (response.ok) {
         setImages(newImages)
-        toast.success('Image removed')
+        toast.success('Image removed successfully')
       } else {
         toast.error('Failed to remove image')
       }
@@ -86,6 +117,11 @@ export default function CourseImagesPageContent() {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleCancelPending = () => {
+    setPendingImage(null)
+    toast.info('Image upload cancelled')
   }
 
   if (!programId) {
@@ -128,10 +164,43 @@ export default function CourseImagesPageContent() {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+        {/* Pending Image Preview */}
+        {pendingImage && (
+          <div className="border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">PENDING IMAGE - Click Save to add to course</p>
+            </div>
+            <div className="relative h-48 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-600 mb-4">
+              <Image
+                src={pendingImage}
+                alt="Pending image"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleSaveImage}
+                disabled={isSaving}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-[#003a7a] transition cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <Plus size={18} /> Save Image
+              </button>
+              <button
+                onClick={handleCancelPending}
+                disabled={isSaving}
+                className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-400 transition cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Images Grid */}
         {images.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Images</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Images ({images.length})</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
@@ -146,7 +215,7 @@ export default function CourseImagesPageContent() {
                   <button
                     onClick={() => handleDeleteImage(index)}
                     disabled={isSaving}
-                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 hover:bg-red-600"
+                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 hover:bg-red-600 cursor-pointer"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -158,7 +227,7 @@ export default function CourseImagesPageContent() {
         )}
 
         {/* Upload Section */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div className={pendingImage ? 'border-t border-gray-200 dark:border-gray-700 pt-6' : ''}>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add New Image</h2>
           <CldUploadWidget
             uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
@@ -179,7 +248,7 @@ export default function CourseImagesPageContent() {
           </CldUploadWidget>
         </div>
 
-        {images.length === 0 && (
+        {images.length === 0 && !pendingImage && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <p>No images added yet. Upload your first image above.</p>
           </div>
