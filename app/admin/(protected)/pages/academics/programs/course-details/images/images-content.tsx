@@ -121,7 +121,7 @@ export default function CourseImagesPageContent() {
 
   const handleCancelPending = () => {
     setPendingImage(null)
-    toast.info('Image upload cancelled')
+    toast.success('Image upload cancelled')
   }
 
   if (!programId) {
