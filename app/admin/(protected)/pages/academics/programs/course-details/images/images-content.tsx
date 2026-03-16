@@ -200,7 +200,10 @@ export default function CourseImagesPageContent() {
         {/* Images Grid */}
         {images.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Images ({images.length})</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Current Images</h2>
+              <span className="px-3 py-1 bg-primary text-white rounded-full text-sm font-medium">{images.length} images</span>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
