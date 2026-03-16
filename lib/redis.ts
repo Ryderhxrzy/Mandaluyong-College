@@ -21,6 +21,11 @@ export const cacheKeys = {
   missionVision: 'about:missionVision',
   coreValuesSection: 'about:coreValuesSection',
   joinCommunity: 'about:joinCommunity',
+  // Course details
+  courseImages: (courseId: string) => `course:${courseId}:images`,
+  courseCareers: (courseId: string) => `course:${courseId}:careers`,
+  courseCareerSection: (courseId: string) => `course:${courseId}:career-section`,
+  courseCurriculum: (courseId: string) => `course:${courseId}:curriculum`,
 }
 
 // Cache TTL in seconds (1 hour)
