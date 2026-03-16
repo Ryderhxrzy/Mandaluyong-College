@@ -57,6 +57,29 @@ CREATE TABLE IF NOT EXISTS course_possible_careers (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS course_possible_careers_section (
+  id BIGSERIAL PRIMARY KEY,
+  course_id INT NOT NULL UNIQUE REFERENCES public.programs_featured_programs(id) ON DELETE CASCADE,
+  section_title TEXT NOT NULL,
+  section_sub_title TEXT,
+  section_description TEXT NOT NULL,
+  order_number INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_course_possible_careers_section_order ON course_possible_careers_section(order_number);
+
+ALTER TABLE course_possible_careers_section ENABLE ROW LEVEL SECURITY;
+
+-- =====================================================
+-- curriculum_years Policies
+-- =====================================================
+-- Public: Read access for all users
+CREATE POLICY course_possible_careers_section_select ON course_possible_careers_section
+  FOR SELECT
+  USING (true);
+
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_curriculum_semesters_year_id ON curriculum_semesters(year_id);
 CREATE INDEX IF NOT EXISTS idx_course_curriculum_semester_id ON course_curriculum(semester_id);
@@ -420,6 +443,7 @@ ALTER TABLE curriculum_semesters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_curriculum ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_details_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_possible_careers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE course_possible_careers_section ENABLE ROW LEVEL SECURITY;
 
 -- =====================================================
 -- curriculum_years Policies
