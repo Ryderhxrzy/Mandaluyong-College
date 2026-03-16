@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 export async function PUT(
   request: NextRequest,
@@ -40,6 +41,15 @@ export async function PUT(
         .insert(imagesToInsert)
 
       if (error) throw error
+    }
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseImages(courseId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for images:${courseId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
     }
 
     return NextResponse.json({ message: 'Images updated successfully' })
