@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 export async function PUT(
   request: NextRequest,
@@ -39,6 +40,15 @@ export async function PUT(
 
     if (error) throw error
 
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCurriculum(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for curriculum:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
+
     return NextResponse.json({ message: 'Course updated successfully', data })
   } catch (error) {
     console.error('Error updating course:', error)
@@ -77,6 +87,15 @@ export async function DELETE(
       .eq('course_id', numericProgramId)
 
     if (error) throw error
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCurriculum(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for curriculum:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
 
     return NextResponse.json({ message: 'Course deleted successfully' })
   } catch (error) {
