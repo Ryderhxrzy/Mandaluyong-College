@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { redis, cacheKeys } from '@/lib/redis'
 
 export async function POST(
   request: NextRequest,
@@ -35,6 +36,15 @@ export async function POST(
       .single()
 
     if (error) throw error
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCareers(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for careers:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
 
     return NextResponse.json({ message: 'Career added successfully', data })
   } catch (error) {
@@ -83,6 +93,15 @@ export async function PUT(
 
     if (error) throw error
 
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCareers(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for careers:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
+
     return NextResponse.json({ message: 'Career updated successfully', data })
   } catch (error) {
     console.error('Error updating career:', error)
@@ -123,6 +142,15 @@ export async function DELETE(
       .eq('course_id', numericProgramId)
 
     if (error) throw error
+
+    // Invalidate cache
+    const cacheKey = cacheKeys.courseCareers(programId)
+    try {
+      await redis.del(cacheKey)
+      console.log(`Cache invalidated for careers:${programId}`)
+    } catch (cacheError) {
+      console.log('Cache invalidation error:', cacheError)
+    }
 
     return NextResponse.json({ message: 'Career deleted successfully' })
   } catch (error) {
