@@ -34,6 +34,7 @@ export default function RealtimeAdmissionsWrapper({
   initialWhyChooseSubtitle = 'Discover what sets MCST apart. We are dedicated to providing transformative education, fostering innovation, and building a community committed to public service and excellence.',
   initialWhyChooseCards = [],
 }: RealtimeAdmissionsWrapperProps) {
+  const [isMounted, setIsMounted] = useState(false)
   const [whyChooseTitle, setWhyChooseTitle] = useState(initialWhyChooseTitle)
   const [whyChooseSubtitle, setWhyChooseSubtitle] = useState(initialWhyChooseSubtitle)
   const [whyChooseCards, setWhyChooseCards] = useState<WhyChooseCard[]>(
@@ -120,11 +121,12 @@ export default function RealtimeAdmissionsWrapper({
   const setupRealtimeSubscriptions = () => {
     // Subscribe to why_choose_about_page changes
     const whyChooseSectionChannel = supabase
-      .channel('why_choose_section_realtime')
+      .channel('why_choose_section_realtime_admissions')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'why_choose_about_page' },
         async () => {
+          if (!isMounted) return
           const { data, error } = await supabase
             .from('why_choose_about_page')
             .select('*')
@@ -142,11 +144,12 @@ export default function RealtimeAdmissionsWrapper({
 
     // Subscribe to why_choose_cards_about_page changes
     const whyChooseCardsChannel = supabase
-      .channel('why_choose_cards_realtime')
+      .channel('why_choose_cards_realtime_admissions')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'why_choose_cards_about_page' },
         async () => {
+          if (!isMounted) return
           const { data, error } = await supabase
             .from('why_choose_cards_about_page')
             .select('*')
@@ -175,8 +178,13 @@ export default function RealtimeAdmissionsWrapper({
   }
 
   useEffect(() => {
+    setIsMounted(true)
     fetchInitialData()
-    setupRealtimeSubscriptions()
+    const unsubscribe = setupRealtimeSubscriptions()
+
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   return (
