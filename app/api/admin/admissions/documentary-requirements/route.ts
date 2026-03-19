@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { redis } from '@/lib/redis'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +9,7 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Requirement text is required' }, { status: 400 })
     }
 
-    const { data: maxData } = await supabase
+    const { data: maxData } = await supabaseAdmin
       .from('admissions_documentary_requirements')
       .select('order_index')
       .order('order_index', { ascending: false })
@@ -22,7 +17,7 @@ export async function POST(request: Request) {
 
     const nextOrder = (maxData && maxData.length > 0 ? maxData[0].order_index : 0) + 1
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('admissions_documentary_requirements')
       .insert([{ requirement_text, requirement_type: requirement_type || 'main', order_index: nextOrder, is_active: true }])
       .select()
