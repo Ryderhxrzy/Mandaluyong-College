@@ -239,3 +239,75 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_documentary_requ
 ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_admission_procedures;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_goals;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_banner_settings;
+
+-- ============================================================
+-- Admissions CTA Section
+-- ============================================================
+
+-- Admissions CTA Settings Table (title + description)
+CREATE TABLE IF NOT EXISTS public.admissions_cta (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL DEFAULT 'MCST Mandaluyong College of Science and Technology',
+  description TEXT NOT NULL DEFAULT 'Begin your journey with an institution dedicated to excellence in science, innovation, and inclusive education. At MCST, we nurture future-ready leaders and critical thinkers committed to national development and global competitiveness.',
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.admissions_cta ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access to active admissions cta" ON public.admissions_cta
+  FOR SELECT
+  USING (is_active = true);
+
+CREATE POLICY "Allow admin full access to admissions cta" ON public.admissions_cta
+  FOR ALL
+  USING (true);
+
+-- Admissions CTA Images Table
+CREATE TABLE IF NOT EXISTS public.admissions_cta_images (
+  id SERIAL PRIMARY KEY,
+  image_url TEXT NOT NULL,
+  alt_text TEXT NOT NULL DEFAULT 'MCST Image',
+  order_index INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.admissions_cta_images ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access to active admissions cta images" ON public.admissions_cta_images
+  FOR SELECT
+  USING (is_active = true);
+
+CREATE POLICY "Allow admin full access to admissions cta images" ON public.admissions_cta_images
+  FOR ALL
+  USING (true);
+
+-- Insert default CTA content
+INSERT INTO public.admissions_cta (title, description, is_active)
+VALUES (
+  'MCST Mandaluyong College of Science and Technology',
+  'Begin your journey with an institution dedicated to excellence in science, innovation, and inclusive education. At MCST, we nurture future-ready leaders and critical thinkers committed to national development and global competitiveness.',
+  true
+)
+ON CONFLICT DO NOTHING;
+
+-- Insert default CTA images (using existing local images as defaults)
+INSERT INTO public.admissions_cta_images (image_url, alt_text, order_index)
+VALUES
+  ('/2.webp',  'MCST Students',       1),
+  ('/3.webp',  'MCST Community',      2),
+  ('/5.jpg',   'MCST Students Group', 3),
+  ('/6.jpg',   'MCST Excellence',     4)
+ON CONFLICT DO NOTHING;
+
+-- Indexes for CTA tables
+CREATE INDEX IF NOT EXISTS idx_admissions_cta_active        ON public.admissions_cta(is_active);
+CREATE INDEX IF NOT EXISTS idx_admissions_cta_images_active ON public.admissions_cta_images(is_active);
+CREATE INDEX IF NOT EXISTS idx_admissions_cta_images_order  ON public.admissions_cta_images(order_index);
+
+-- Enable real-time for CTA tables
+ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_cta;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.admissions_cta_images;
