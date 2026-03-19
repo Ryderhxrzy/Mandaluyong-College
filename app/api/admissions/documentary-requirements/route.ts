@@ -20,7 +20,7 @@ export async function GET() {
     const cachedData = await redis.get(cacheKey)
 
     if (cachedData) {
-      return Response.json(JSON.parse(cachedData as string))
+      return Response.json(cachedData)
     }
 
     const { data, error } = await supabaseAdmin
@@ -40,7 +40,7 @@ export async function GET() {
       sub_requirements: subRequirements.filter(sub => sub.parent_requirement_id === main.id),
     }))
 
-    await redis.setex(cacheKey, 3600, JSON.stringify(groupedData))
+    await redis.setex(cacheKey, 3600, groupedData)
 
     return Response.json(groupedData)
   } catch (error) {
