@@ -1,8 +1,8 @@
-interface ProgramsBannerProps {
+interface NewsBannerProps {
   backgroundImageUrl?: string
 }
 
-export default function ProgramsBanner({ backgroundImageUrl = '/banner.jpg' }: ProgramsBannerProps) {
+export default function NewsBanner({ backgroundImageUrl = '/banner.jpg' }: NewsBannerProps) {
   return (
     <section
       className="banner-section relative w-full h-[240px] sm:h-[300px] md:h-[600px] flex items-center justify-center overflow-hidden -mt-14 md:-mt-16"
