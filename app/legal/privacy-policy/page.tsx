@@ -1,4 +1,4 @@
-import PrivacyPolicy from '@/components/privacy-policy/PrivacyPolicy'
+import RealtimePrivacyWrapper from '@/components/privacy-policy/RealtimePrivacyWrapper'
 
 export const metadata = {
   title: 'Privacy Policy | Mandaluyong College of Science and Technology',
@@ -6,5 +6,6 @@ export const metadata = {
 }
 
 export default function PrivacyPage() {
-  return <PrivacyPolicy />
+  return <RealtimePrivacyWrapper />
 }
+

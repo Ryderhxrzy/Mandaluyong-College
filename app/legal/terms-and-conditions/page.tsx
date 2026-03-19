@@ -1,4 +1,4 @@
-import TermsAndCondition from '@/components/terms-and-condition/TermsAndCondition'
+import RealtimeTermsWrapper from '@/components/terms-and-condition/RealtimeTermsWrapper'
 
 export const metadata = {
   title: 'Terms & Conditions | Mandaluyong College of Science and Technology',
@@ -6,5 +6,6 @@ export const metadata = {
 }
 
 export default function TermsAndConditionsPage() {
-  return <TermsAndCondition />
+  return <RealtimeTermsWrapper />
 }
+
