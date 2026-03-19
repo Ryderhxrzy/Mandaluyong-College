@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Trash2, Edit2, Save, X } from 'lucide-react'
+import { ArrowLeft, Trash2, Edit2, Save, X, ChevronDown } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
-import * as Icons from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
+import IconPicker from '@/components/admin/IconPicker'
 
 interface Goal {
   id: number
@@ -21,8 +22,7 @@ export default function GoalsContent() {
   const [isSaving, setIsSaving] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [formData, setFormData] = useState({ goal_text: '', icon_name: 'BookOpen' })
-
-  const lucideIcons = ['BookOpen', 'TrendingUp', 'Users', 'Zap', 'Globe', 'Award', 'Heart', 'Lightbulb', 'Target', 'Rocket']
+  const [showIconPicker, setShowIconPicker] = useState(false)
 
   useEffect(() => {
     fetchGoals()
@@ -46,7 +46,7 @@ export default function GoalsContent() {
 
   const setupRealtimeSubscription = () => {
     const channel = supabase
-      .channel('admissions_goals_realtime')
+      .channel('admissions_goals_admin_realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'admissions_goals' },
@@ -149,24 +149,20 @@ export default function GoalsContent() {
   }
 
   const getIcon = (iconName: string) => {
-    const iconMap: Record<string, any> = {
-      BookOpen: Icons.BookOpen,
-      TrendingUp: Icons.TrendingUp,
-      Users: Icons.Users,
-      Zap: Icons.Zap,
-      Globe: Icons.Globe,
-      Award: Icons.Award,
-      Heart: Icons.Heart,
-      Lightbulb: Icons.Lightbulb,
-      Target: Icons.Target,
-      Rocket: Icons.Rocket,
-    }
-    return iconMap[iconName] || Icons.BookOpen
+    // @ts-ignore
+    return (LucideIcons[iconName] as LucideIcons.LucideIcon) || LucideIcons.BookOpen
+  }
+
+  const handleIconSelect = (iconName: string) => {
+    setFormData((prev) => ({ ...prev, icon_name: iconName }))
+    setShowIconPicker(false)
   }
 
   if (isLoading) {
     return <div className="p-8">Loading...</div>
   }
+
+  const SelectedIcon = getIcon(formData.icon_name)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
@@ -202,18 +198,20 @@ export default function GoalsContent() {
                       >
                         <Icon className="text-primary flex-shrink-0 mt-1" size={28} />
                         <div className="flex-1">
-                          <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">{goal.goal_text}</p>
+                          <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
+                            {goal.goal_text}
+                          </p>
                         </div>
                         <div className="flex gap-2 flex-shrink-0">
                           <button
                             onClick={() => handleEdit(goal)}
-                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded cursor-pointer"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(goal.id)}
-                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded cursor-pointer"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -232,20 +230,24 @@ export default function GoalsContent() {
               {editingId ? 'Edit Goal' : 'Add Goal'}
             </h2>
             <div className="space-y-4">
+              {/* Icon Picker Trigger */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icon</label>
-                <select
-                  value={formData.icon_name}
-                  onChange={(e) => setFormData({ ...formData, icon_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Icon
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowIconPicker(true)}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition cursor-pointer"
                 >
-                  {lucideIcons.map((icon) => (
-                    <option key={icon} value={icon}>
-                      {icon}
-                    </option>
-                  ))}
-                </select>
+                  <div className="flex items-center gap-3">
+                    <SelectedIcon size={20} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">{formData.icon_name}</span>
+                  </div>
+                  <ChevronDown size={16} className="text-gray-400 flex-shrink-0" />
+                </button>
               </div>
+
               <textarea
                 value={formData.goal_text}
                 onChange={(e) => setFormData({ ...formData, goal_text: e.target.value })}
@@ -279,6 +281,15 @@ export default function GoalsContent() {
           </div>
         </div>
       </div>
+
+      {/* Icon Picker Modal */}
+      {showIconPicker && (
+        <IconPicker
+          selectedIcon={formData.icon_name}
+          onSelect={handleIconSelect}
+          onClose={() => setShowIconPicker(false)}
+        />
+      )}
     </div>
   )
 }
