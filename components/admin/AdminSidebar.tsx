@@ -118,6 +118,7 @@ const navItems: NavItem[] = [
           { label: 'Documentary Requirements', href: '/admin/pages/academics/admissions/documentary-requirements', icon: Clipboard },
           { label: 'Admission Procedures', href: '/admin/pages/academics/admissions/procedures', icon: FileText },
           { label: 'Admission Goals', href: '/admin/pages/academics/admissions/goals', icon: Lightbulb },
+          { label: 'CTA Section', href: '/admin/pages/academics/admissions/cta', icon: Mail },
         ],
       },
     ],
