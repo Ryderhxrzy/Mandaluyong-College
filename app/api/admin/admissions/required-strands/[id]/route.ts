@@ -1,21 +1,17 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { redis } from '@/lib/redis'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { program, strand_requirement } = await request.json()
-    const id = parseInt(params.id)
+    const { id: rawId } = await params
+    const id = parseInt(rawId)
 
     if (!program || !strand_requirement) {
       return Response.json({ error: 'Program and strand requirement are required' }, { status: 400 })
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('admissions_required_strands')
       .update({ program, strand_requirement, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -32,11 +28,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id)
+    const { id: rawId } = await params
+    const id = parseInt(rawId)
 
-    const { error } = await supabase.from('admissions_required_strands').delete().eq('id', id)
+    const { error } = await supabaseAdmin.from('admissions_required_strands').delete().eq('id', id)
 
     if (error) throw error
 
