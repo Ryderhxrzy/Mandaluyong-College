@@ -94,7 +94,7 @@ export default function Hero({
               <Link href="/apply" className={primaryButtonClasses}>
                 Apply Now <ArrowRight size={arrowSize} />
               </Link>
-              <Link href="/academics" className={secondaryButtonClasses}>
+              <Link href="/programs" className={secondaryButtonClasses}>
                 Explore Programs
               </Link>
             </>
