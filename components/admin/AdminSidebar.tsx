@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
@@ -127,6 +127,11 @@ const navItems: NavItem[] = [
     label: 'News',
     href: '/admin/pages/news',
     icon: Newspaper,
+    children: [
+      { label: 'Banner', href: '/admin/pages/news/banner', icon: Zap },
+      { label: 'Latest Announcements', href: '/admin/pages/news/announcements', icon: Clipboard },
+      { label: 'CTA Section', href: '/admin/pages/news/cta', icon: Mail },
+    ],
   },
   {
     label: 'FAQs',
@@ -150,35 +155,40 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Auto-expand dropdowns with active children (including nested)
-  useEffect(() => {
-    setMounted(true)
-    const newExpanded = new Set<string>()
+  // Memoized navigation items to prevent recreation
+  const memoizedNavItems = useMemo(() => navItems, [])
 
-    const expandActiveItems = (items: NavItem[], parentHrefs: string[] = []) => {
-      items.forEach((item) => {
+  // Optimized function to find active items
+  const findActiveItems = useCallback((items: NavItem[], currentPath: string, parentHrefs: string[] = []): string[] => {
+    const activeHrefs = new Set<string>()
+    
+    const checkItems = (itemsToCheck: NavItem[], parents: string[] = []) => {
+      itemsToCheck.forEach((item) => {
         if (item.children) {
-          // Check if any child is active
-          const hasActiveChild = item.children.some((child) => pathname.startsWith(child.href))
+          const hasActiveChild = item.children.some((child) => currentPath.startsWith(child.href))
           if (hasActiveChild) {
-            // Expand this item and all parents
-            newExpanded.add(item.href)
-            parentHrefs.forEach((href) => newExpanded.add(href))
-            // Recursively expand children
-            expandActiveItems(item.children, [...parentHrefs, item.href])
+            activeHrefs.add(item.href)
+            parents.forEach((href) => activeHrefs.add(href))
+            checkItems(item.children, [...parents, item.href])
           } else {
-            // Recursively check deeper children
-            expandActiveItems(item.children, [...parentHrefs, item.href])
+            checkItems(item.children, [...parents, item.href])
           }
         }
       })
     }
+    
+    checkItems(items, parentHrefs)
+    return Array.from(activeHrefs)
+  }, [])
 
-    expandActiveItems(navItems)
-    setExpandedGroups(newExpanded)
-  }, [pathname])
+  // Auto-expand dropdowns with active children (optimized)
+  useEffect(() => {
+    setMounted(true)
+    const activeHrefs = findActiveItems(memoizedNavItems, pathname)
+    setExpandedGroups(new Set(activeHrefs))
+  }, [pathname, memoizedNavItems, findActiveItems])
 
-  const toggleDropdown = (href: string) => {
+  const toggleDropdown = useCallback((href: string) => {
     setExpandedGroups((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(href)) {
@@ -188,10 +198,10 @@ export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
       }
       return newSet
     })
-  }
+  }, [])
 
-  const isActive = (href: string) => pathname === href
-  const isGroupActive = (href: string) => pathname.startsWith(href)
+  const isActive = useCallback((href: string) => pathname === href, [pathname])
+  const isGroupActive = useCallback((href: string) => pathname.startsWith(href), [pathname])
 
   return (
     <nav className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
