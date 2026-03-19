@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { redis } from '@/lib/redis'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +9,7 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Section name is required' }, { status: 400 })
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('admissions_banner_settings')
       .insert([{ ...body, is_active: true }])
       .select()
