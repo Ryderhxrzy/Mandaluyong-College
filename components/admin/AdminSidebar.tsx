@@ -30,6 +30,8 @@ import {
   Users,
   Image as ImageIcon,
   Layers,
+  ShieldCheck,
+  Handshake,
 } from 'lucide-react'
 
 interface NavItem {
@@ -137,6 +139,35 @@ const navItems: NavItem[] = [
     label: 'FAQs',
     href: '/admin/pages/faqs',
     icon: HelpCircle,
+    children: [
+      { label: 'Hero Section', href: '/admin/pages/faqs/hero', icon: Zap },
+      { label: 'FAQ Questions', href: '/admin/pages/faqs/questions', icon: HelpCircle },
+    ],
+  },
+  {
+    label: 'Legal Pages',
+    href: '/admin/pages/legal',
+    icon: FileText,
+    children: [
+      {
+        label: 'Privacy Policy',
+        href: '/admin/pages/legal/privacy-policy-main',
+        icon: ShieldCheck,
+        children: [
+          { label: 'Hero Section', href: '/admin/pages/legal/privacy-policy-hero', icon: Zap },
+          { label: 'Policy Content', href: '/admin/pages/legal/privacy-policy', icon: Clipboard },
+        ],
+      },
+      {
+        label: 'Terms & Conditions',
+        href: '/admin/pages/legal/terms-and-conditions-main',
+        icon: Handshake,
+        children: [
+          { label: 'Hero Section', href: '/admin/pages/legal/terms-and-conditions-hero', icon: Zap },
+          { label: 'Terms Content', href: '/admin/pages/legal/terms-and-conditions', icon: Clipboard },
+        ],
+      },
+    ],
   },
   {
     label: 'Contact',
@@ -147,7 +178,8 @@ const navItems: NavItem[] = [
       { label: 'Contact Info', href: '/admin/pages/contact/info', icon: Clipboard },
     ],
   },
-]
+];
+
 
 export default function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
