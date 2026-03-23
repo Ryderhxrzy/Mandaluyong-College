@@ -25,7 +25,7 @@ export default function FaqsHeroContent() {
   const [isSaving, setIsSaving] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
-  
+
   // Form State
   const [formData, setFormData] = useState({
     title: '',
@@ -36,7 +36,7 @@ export default function FaqsHeroContent() {
 
   useEffect(() => {
     fetchHero()
-    
+
     // Setup Realtime
     const channel = supabase
       .channel('faqs_hero_admin_realtime')
@@ -55,7 +55,7 @@ export default function FaqsHeroContent() {
         .select('*')
         .limit(1)
         .single()
-      
+
       if (!error && data) {
         setHero(data)
         setFormData({
@@ -113,7 +113,6 @@ export default function FaqsHeroContent() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
       <div className="space-y-6">
-        {/* Header */}
         <div className="space-y-2">
           <Link
             href="/admin/pages/faqs"
@@ -167,9 +166,9 @@ export default function FaqsHeroContent() {
                       className="w-full px-4 py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition flex items-center justify-between cursor-pointer h-12"
                     >
                       <div className="flex items-center gap-3">
-                         {/* @ts-ignore */}
-                         {React.createElement(LucideIcons[formData.icon] || LucideIcons.HelpCircle, { size: 24, className: 'text-primary' })}
-                         <span className="font-medium">{formData.icon || 'Choose an icon...'}</span>
+                        {/* @ts-ignore */}
+                        {React.createElement(LucideIcons[formData.icon] || LucideIcons.HelpCircle, { size: 24, className: 'text-primary' })}
+                        <span className="font-medium">{formData.icon || 'Choose an icon...'}</span>
                       </div>
                       <Search size={18} className="text-gray-400" />
                     </button>
@@ -233,14 +232,14 @@ export default function FaqsHeroContent() {
       </div>
 
       {isPickerOpen && (
-         <IconPicker 
-            selectedIcon={formData.icon}
-            onSelect={(name) => {
-                setFormData({ ...formData, icon: name })
-                setIsPickerOpen(false)
-            }}
-            onClose={() => setIsPickerOpen(false)}
-         />
+        <IconPicker
+          selectedIcon={formData.icon}
+          onSelect={(name) => {
+            setFormData({ ...formData, icon: name })
+            setIsPickerOpen(false)
+          }}
+          onClose={() => setIsPickerOpen(false)}
+        />
       )}
     </div>
   )
